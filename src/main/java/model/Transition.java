@@ -10,7 +10,14 @@ public class  Transition {
     private String source;
     private String target;
     private String [] actions;
-	
+
+
+    Transition (String source, String target, String[] actions){
+        this.source = source;
+        this.target = target;
+        this.actions = actions;
+    }
+
     /**
      * Returns the source state of a transition.
      * @return the id of the source state
@@ -31,6 +38,10 @@ public class  Transition {
      * */
     public String[] getActions() {
 	return actions;
+    }
+
+    public boolean isLoop() {
+        return source.equals(target);
     }
 	
     @Override

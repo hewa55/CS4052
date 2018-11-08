@@ -1,35 +1,68 @@
 package modelChecker;
 
+import formula.stateFormula.And;
 import formula.stateFormula.StateFormula;
 import model.Model;
+import model.State;
+
+import java.util.ArrayList;
 
 public class SimpleModelChecker implements ModelChecker {
 
+    private SATCheck SATCheck;
+    private String[] trace;
+    private ENF enf;
+    private TraceFinder traceFinder;
+
+
+    public SimpleModelChecker() {
+        this.SATCheck = new SATCheck();
+        this.enf = new ENF();
+        this.traceFinder = new TraceFinder();
+    }
+
     @Override
     public boolean check(Model model, StateFormula constraint, StateFormula query) {
-        // TODO Auto-generated method stub
-        // System.out.println("Hello ");
+        boolean satisfy;
+        StateFormula finalFormula = query;
 
-        //For all states, query holds true given constraint
-        // checkAllStates( model, constraint, formula);
-        // 0.1 build a graph
-        // 0.2 get all execution paths (-->cycles)
+        finalFormula = (constraint == null) ? finalFormula : new And(constraint, finalFormula);
 
-        // 1 get root
-        // 2 check the possible transitions - depth first
-        // 3 pick a state, transition, check formula do the same thing again
-        //  a if correct, go up and select second possible transition
-        //  b if fail, stop and return trace
-        // do the same thing again
+        model.setStates();
+        model.setTransitions();
+        model.prepare();
+
+        StateFormula enfVersion = enf.parseENF(finalFormula);
+        SATCheck.setModel(model);
+
+        ArrayList<State> satisfactory_states = SATCheck.sat(model.getStatesList() , enfVersion);
+
+        satisfy = satisfactory_states.containsAll(model.initialStates());
+        if (!satisfy) {
+            trace = traceFinder.getTrace(model, enfVersion);
+            getTrace();
+        }
 
 
-        return false;
+        return satisfy;
     }
 
     @Override
     public String[] getTrace() {
-        // TODO Auto-generated method stub
-        return null;
+        System.out.println("Trace");
+        for (int i = 0; i < trace.length; i++) {
+            System.out.println("-> " + trace[i]);
+        }
+        return trace;
+    }
+
+    public String getTraceAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < trace.length; i++) {
+            sb.append(" -> ");
+            sb.append(trace[i]);
+        }
+        return sb.toString();
     }
 
 }
