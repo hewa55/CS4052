@@ -3,22 +3,22 @@
 		{
 			"init": true,
 			"name": s0,
-			"label": [“q”]
+			"label": [q]
 		}, 
 		{
 			"init": false,
 			"name": s1, 
-			"label": [“q”]
+			"label": [q]
 		}, 
 		{
 			"init": false,
 			"name": s2,
-			"label": [“p”,”r”]
+			"label": [p,r]
 		},
 		{
 			"init": false,
 			"name": s3,
-			"label": [“p”, “q”]
+			"label": [p, q]
 		}
 	],
 	"transitions": [
