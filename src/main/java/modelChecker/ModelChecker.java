@@ -11,7 +11,7 @@ public interface ModelChecker {
     /**
      * verifies whether the model satisfies the query under the given
      * constraint.
-     * 
+     *
      * @param model
      *            - model to verify
      * @param constraint

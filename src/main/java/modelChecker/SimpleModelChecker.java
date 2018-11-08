@@ -9,15 +9,14 @@ import java.util.ArrayList;
 
 public class SimpleModelChecker implements ModelChecker {
 
-    private SATCheck SATCheck;
+    ENFTranslator enfTranslator;
+    TraceFinder traceFinder;
+    Sat sat;
     private String[] trace;
-    private ENF enf;
-    private TraceFinder traceFinder;
-
 
     public SimpleModelChecker() {
-        this.SATCheck = new SATCheck();
-        this.enf = new ENF();
+        this.sat = new Sat();
+        this.enfTranslator = new ENFTranslator();
         this.traceFinder = new TraceFinder();
     }
 
@@ -28,21 +27,19 @@ public class SimpleModelChecker implements ModelChecker {
 
         finalFormula = (constraint == null) ? finalFormula : new And(constraint, finalFormula);
 
+
         model.setStates();
         model.setTransitions();
         model.prepare();
 
-        StateFormula enfVersion = enf.parseENF(finalFormula);
-        SATCheck.setModel(model);
+        StateFormula enfVersion = enfTranslator.parseENF(finalFormula);
+        sat.setModel(model);
 
-        ArrayList<State> satisfactory_states = SATCheck.sat(model.getStatesList() , enfVersion);
+        ArrayList<State> satisfactory_states = sat.sat(model.getStateArrayList() , enfVersion);
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
-        if (!satisfy) {
+        if (!satisfy)
             trace = traceFinder.getTrace(model, enfVersion);
-            getTrace();
-        }
-
 
         return satisfy;
     }

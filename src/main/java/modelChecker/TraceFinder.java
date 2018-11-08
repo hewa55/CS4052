@@ -9,30 +9,22 @@ import java.util.ArrayList;
 
 public class TraceFinder {
     ArrayList<String> trace = new ArrayList<>();
-    ENF enf;
-    SATCheck SATCheck;
+    ENFTranslator enf;
+    Sat sat;
 
 
     public TraceFinder() {
-        this.SATCheck = new SATCheck();
-        this.enf = new ENF();
-    }
-
-    public void printTrace() {
-        for (int i = 0; i < trace.size(); i++) {
-            System.out.println(trace.get(i));
-        }
+        this.sat = new Sat();
+        this.enf = new ENFTranslator();
     }
 
     public String[] getTrace(Model model, StateFormula formula){
-
-        StateFormula negatedFormula = new Not(formula);
-        SATCheck.setModel(model);
-        ArrayList<State> satisfactoryState = SATCheck.sat(model.getStatesList(), negatedFormula);
+        StateFormula negationOfOriginalFormula = new Not(formula);
+        sat.setModel(model);
+        ArrayList<State> satisfactoryState = sat.sat(model.getStateArrayList(), negationOfOriginalFormula);
         satisfactoryState.retainAll(model.initialStates());
-
         for (State state: satisfactoryState) {
-            trace.add(state.getName());
+            trace.add("" + state.getName());
         }
 
         return trace.toArray(new String[trace.size()]);
