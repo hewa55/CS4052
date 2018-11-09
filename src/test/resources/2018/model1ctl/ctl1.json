@@ -1,5 +1,5 @@
 {
-	"formula": "(p||r) U q",
-	"a": ["act1"]
+	"formula": "AG(p||r)",
+	"a": ["act2"]
 
 }

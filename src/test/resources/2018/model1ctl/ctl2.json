@@ -1,5 +1,5 @@
 {
-	"formula": "AaX (p || r)",
-	"a": ["act2"]
+	"formula": "A X (p || r) && !(p && r)",
+	"a": ["act1"]
 
 }
