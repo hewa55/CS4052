@@ -71,6 +71,7 @@ public class ENFTranslator {
 
     /**
      * Simplifiy Not(ThereExists) Structure
+     *
      * @param formula of class PathFormula
      * @return An object of type NOT
      */
@@ -86,10 +87,14 @@ public class ENFTranslator {
      */
     private StateFormula processForAll(ForAll formula) {
         switch (formula.pathFormula.getFormulaType()) {
-            case NEXT: return forAllNext((Next) formula.pathFormula);
-            case EVENTUALLY: return forAllEventually((Eventually) formula.pathFormula);
-            case UNTIL: return forAllUntil((Until) formula.pathFormula);
-            case ALWAYS: return forAllAlways((Always) formula.pathFormula);
+            case NEXT:
+                return forAllNext((Next) formula.pathFormula);
+            case EVENTUALLY:
+                return forAllEventually((Eventually) formula.pathFormula);
+            case UNTIL:
+                return forAllUntil((Until) formula.pathFormula);
+            case ALWAYS:
+                return forAllAlways((Always) formula.pathFormula);
             default:
                 return null;
         }
@@ -98,16 +103,22 @@ public class ENFTranslator {
 
     /**
      * ENF parser ThereExists CTL
+     *
      * @param formula of type ThereExists
      * @return a StateFormula
      */
     private StateFormula processThereExists(ThereExists formula) {
         switch (formula.pathFormula.getFormulaType()) {
-            case ALWAYS: return thereExistsAlways((Always) formula.pathFormula);
-            case EVENTUALLY:return thereExistsEventually((Eventually) formula.pathFormula);
-            case NEXT: return thereExistsNext((Next) formula.pathFormula);
-            case UNTIL:return thereExistsUntil((Until) formula.pathFormula);
-            default: return null;
+            case ALWAYS:
+                return thereExistsAlways((Always) formula.pathFormula);
+            case EVENTUALLY:
+                return thereExistsEventually((Eventually) formula.pathFormula);
+            case NEXT:
+                return thereExistsNext((Next) formula.pathFormula);
+            case UNTIL:
+                return thereExistsUntil((Until) formula.pathFormula);
+            default:
+                return null;
         }
     }
 
@@ -143,7 +154,7 @@ public class ENFTranslator {
     //
     // FORALL HELPER FUNCTIONS
     //
-    private Not forAllAlways(Always formula){
+    private Not forAllAlways(Always formula) {
         // ForAll(Always(q)) equals Not(ThereExists(TRUE U Not(enf(q))))
         return NotThereExists(
                 new Until(
@@ -154,7 +165,7 @@ public class ENFTranslator {
                 ));
     }
 
-    private Not forAllNext(Next formula){
+    private Not forAllNext(Next formula) {
         // ForAll(Next(q)) equals Not(ThereExists(Next(Not(enf(q)))))
         return NotThereExists(
                 new Next(
@@ -163,7 +174,7 @@ public class ENFTranslator {
                 ));
     }
 
-    private Not forAllEventually(Eventually formula){
+    private Not forAllEventually(Eventually formula) {
         // ForAll(EVENTUALLY(q)) equals Not(ThereExists(Always(Not(enf(q)))))
         return NotThereExists(
                 new Always(
@@ -172,7 +183,7 @@ public class ENFTranslator {
                 ));
     }
 
-    private And forAllUntil(Until formula){
+    private And forAllUntil(Until formula) {
         // ForAll(q U p) equals
         // Not(ThereExists(Not(enf(q)) U (Not(enf(p)) AND Not(enf(q)))))
         // AND Not(ThereExists(Always(Not(enf(q)))))
@@ -204,7 +215,7 @@ public class ENFTranslator {
     //
     // THERE EXISTS HELPER FUNCTIONS
     //
-    private ThereExists thereExistsAlways(Always formula){
+    private ThereExists thereExistsAlways(Always formula) {
         // ThereExists(Always(q)) = ThereExists(Always(enf(q)))
         return new ThereExists(
                 new Always(
@@ -214,7 +225,7 @@ public class ENFTranslator {
         );
     }
 
-    private ThereExists thereExistsEventually(Eventually formula){
+    private ThereExists thereExistsEventually(Eventually formula) {
         // ThereExists(EVENTUALLY(q)) = ThereExists( TRUE U enf(q))
         return new ThereExists(
                 new Until(
@@ -226,7 +237,8 @@ public class ENFTranslator {
 
         );
     }
-    private ThereExists thereExistsNext(Next formula){
+
+    private ThereExists thereExistsNext(Next formula) {
         // ThereExists(Next(q)) = ThereExists(Next(enf(q)))
         return new ThereExists(
                 new Next(
@@ -236,7 +248,7 @@ public class ENFTranslator {
         );
     }
 
-    private ThereExists thereExistsUntil(Until formula){
+    private ThereExists thereExistsUntil(Until formula) {
         // ThereExists(q U p) = ThereExists(enf(q) U enf(p))
         return new ThereExists(
                 new Until(
@@ -247,5 +259,4 @@ public class ENFTranslator {
                 )
         );
     }
-
 }
