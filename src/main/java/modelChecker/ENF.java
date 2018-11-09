@@ -5,22 +5,12 @@ import formula.stateFormula.*;
 
 import java.util.HashSet;
 
+import static modelChecker.Keywords.*;
+
 /**
  * Convert CTL to existential normal form (ENF) via this class
  */
 public class ENF {
-
-    private static final String ATOMIC = "AtomicProp";
-    private static final String AND = "And";
-    private static final String BOOL = "BoolProp";
-    private static final String FOR_ALL = "ForAll";
-    private static final String NOT = "Not";
-    private static final String OR = "Or";
-    private static final String THERE_EXISTS = "ThereExists";
-    private static final String ALWAYS = "Always";
-    private static final String EVENTUALLY = "Eventually";
-    private static final String NEXT = "Next";
-    private static final String UNTIL = "Until";
 
     public StateFormula translateENF(StateFormula formula) {
         switch (formula.getFormulaType()) {

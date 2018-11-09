@@ -9,10 +9,12 @@ import model.Model;
 import model.State;
 import model.Transition;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import static modelChecker.Keywords.*;
 
 public class SATCheck {
     private Model model;
@@ -26,34 +28,19 @@ public class SATCheck {
         ArrayList<State> satStates;
 
         switch (formula.getFormulaType()) {
-
-            case "ThereExists":
-                PathFormula pathFormula = ((ThereExists) formula).pathFormula;
-                switch (pathFormula.getFormulaType()) {
-                    case "Next":
-                        satStates = satExNext((ThereExists)formula, states);
-                        break;
-                    case "Until":
-                        satStates = until((ThereExists) formula, states);
-                        break;
-                    case "Always":
-                        satStates = always((ThereExists) formula,  states);
-                        break;
-                    default:
-                        satStates = null;
-                }
+            case THERE_EXISTS:
+                satStates = getSatThereExists((ThereExists) formula,states);
                 break;
-
-            case "BoolProp":
+            case BOOL:
                 satStates = getSatBool((BoolProp)formula,states);
                 break;
-            case "AtomicProp":
+            case ATOMIC:
                 satStates = atomProp((AtomicProp) formula, states);
                 break;
-            case "And":
+            case AND:
                 satStates = andSat((And) formula, states);
                 break;
-            case "Not":
+            case NOT:
                 satStates = notSat((Not) formula,states);
                 break;
             default:
@@ -61,6 +48,20 @@ public class SATCheck {
                 break;
         }
         return satStates;
+    }
+
+    private ArrayList<State> getSatThereExists(ThereExists formula,ArrayList<State> states){
+        PathFormula pathFormula = formula.pathFormula;
+        switch (pathFormula.getFormulaType()) {
+            case NEXT:
+                return satExNext(formula, states);
+
+            case UNTIL:
+                return until(formula, states);
+            case ALWAYS:
+                return always(formula,  states);
+            default: return null;
+        }
     }
 
     private ArrayList<State> atomProp(AtomicProp form, ArrayList<State> states){
