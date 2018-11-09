@@ -4,12 +4,12 @@
 			"init": true,
 			"name": s0,
 			"label": [q]
-		}, 
+		},
 		{
 			"init": false,
-			"name": s1, 
+			"name": s1,
 			"label": [q]
-		}, 
+		},
 		{
 			"init": false,
 			"name": s2,
@@ -26,12 +26,12 @@
 			"source": s0,
 			"target": s1,
 			"actions": ["act1"]
-		}, 
+		},
 		{
 			"source": s1,
 			"target": s3,
 			"actions": ["act2"]
-		}, 
+		},
 		{
 			"source": s1,
 			"target": s2,

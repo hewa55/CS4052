@@ -4,16 +4,16 @@
 			"init": true,
 			"name": "s0",
 			"label": ["p"]
-		},
+		}, 
 		{
 			"init": false,
-			"name": "s1",
+			"name": "s1", 
 			"label": ["p", "q"]
-		},
+		}, 
 		{
 			"init": true,
 			"name": "s2",
-			"label": ["g"]
+			"label": ["r"]
 		}
 	],
 	"transitions": [
@@ -21,12 +21,12 @@
 			"source": "s0",
 			"target": "s1",
 			"actions": ["act1"]
-		},
+		}, 
 		{
 			"source": "s0",
 			"target": "s2",
 			"actions": ["act2"]
-		},
+		}, 
 		{
 			"source": "s1",
 			"target": "s2",
