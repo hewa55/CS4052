@@ -10,13 +10,13 @@ import java.util.ArrayList;
 
 public class SimpleModelChecker implements ModelChecker {
 
-    ENF enfConverter;
-    SATCheck sat;
+    private ENF enfProcessor;
+    private SATCheck satChecker;
     private String[] trace;
 
     public SimpleModelChecker() {
-        this.sat = new SATCheck();
-        this.enfConverter = new ENF();
+        this.satChecker = new SATCheck();
+        this.enfProcessor = new ENF();
     }
 
     @Override
@@ -30,10 +30,10 @@ public class SimpleModelChecker implements ModelChecker {
         model.setTransitions();
         model.prepare();
 
-        StateFormula enfVersion = enfConverter.translateENF(finalFormula);
-        sat.setModel(model);
+        StateFormula enfVersion = enfProcessor.translateENF(finalFormula);
+        satChecker.setModel(model);
 
-        ArrayList<State> satisfactory_states = sat.sat(model.getStateArrayList() , enfVersion);
+        ArrayList<State> satisfactory_states = satChecker.sat(model.getStateArrayList() , enfVersion);
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
         if (!satisfy)
@@ -67,9 +67,9 @@ public class SimpleModelChecker implements ModelChecker {
         ArrayList<String> trace = new ArrayList<>();
         StateFormula negationOfOriginalFormula = new Not(formula);
 
-        sat.setModel(model);
+        satChecker.setModel(model);
 
-        ArrayList<State> satisfactoryState = sat.sat(model.getStateArrayList(), negationOfOriginalFormula);
+        ArrayList<State> satisfactoryState = satChecker.sat(model.getStateArrayList(), negationOfOriginalFormula);
         satisfactoryState.retainAll(model.initialStates());
         for (State state: satisfactoryState) {
             trace.add("" + state.getName());

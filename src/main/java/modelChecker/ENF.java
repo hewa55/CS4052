@@ -40,7 +40,7 @@ public class ENF {
      * @return StateFormula
      */
     private StateFormula processAnd(And formula) {
-        // p and q = enf(p) AND enf(q)
+        // p and q equates to enf(p) AND enf(q)
         return new And(
                 translateENF(formula.left),
                 translateENF(formula.right)
