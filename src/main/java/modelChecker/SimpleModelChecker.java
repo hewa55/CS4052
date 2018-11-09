@@ -24,7 +24,9 @@ public class SimpleModelChecker implements ModelChecker {
         boolean satisfy;
         StateFormula finalFormula = query;
 
-        finalFormula = (constraint == null) ? finalFormula : new And(constraint, finalFormula);
+        if(constraint != null) {
+            finalFormula = new And(constraint, finalFormula);
+        }
 
         model.setStates();
         model.setTransitions();
