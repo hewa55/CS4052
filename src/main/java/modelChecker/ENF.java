@@ -8,7 +8,7 @@ import java.util.HashSet;
 import static modelChecker.Keywords.*;
 
 /**
- * Convert CTL to existential normal form (ENF) via this class
+ * Convert existential normal form (ENF) via this class
  */
 public class ENF {
 
@@ -34,7 +34,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser AND CTL
+     * Process AND from CTL Formula
      *
      * @param formula of class AND
      * @return StateFormula
@@ -48,7 +48,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser NOT CTL
+     * Process a not token from the CTL Formula
      *
      * @param formula of type NOT
      * @return a StateFormula
@@ -61,7 +61,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser BoolProp CTL
+     * Process a boolprop from the CTL Formula
      *
      * @param formula of class BoolProp
      * @return StateFormula
@@ -86,7 +86,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser ForAll CTL
+     * Process ForAll expression from the CTL Formula
      *
      * @param formula of type ForAll
      * @return a StateFormula
@@ -108,7 +108,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser ThereExists CTL
+     * Process a ThereExists from CTL Formula
      *
      * @param formula of type ThereExists
      * @return a StateFormula
@@ -129,7 +129,7 @@ public class ENF {
     }
 
     /**
-     * ENF parser OR CTL
+     * Process OR from CTL Formula
      *
      * @param formula of type OR
      * @return a StateFormula
