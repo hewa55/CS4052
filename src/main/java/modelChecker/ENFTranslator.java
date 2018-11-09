@@ -24,17 +24,17 @@ public class ENFTranslator {
             case ATOMIC:
                 return formula;
             case AND:
-                return parseAnd((And) formula);
+                return processAnd((And) formula);
             case BOOL:
-                return parseBoolProp((BoolProp) formula);
+                return processBoolProp((BoolProp) formula);
             case FOR_ALL:
-                return parseForAll((ForAll) formula);
+                return processForAll((ForAll) formula);
             case NOT:
-                return parseNot((Not) formula);
+                return processNot((Not) formula);
             case OR:
-                return parseOr((Or) formula);
+                return processOr((Or) formula);
             case THERE_EXISTS:
-                return parseThereExists((ThereExists) formula);
+                return processThereExists((ThereExists) formula);
             default:
                 return null;
         }
@@ -46,7 +46,7 @@ public class ENFTranslator {
      * @param formula of class AND
      * @return StateFormula
      */
-    private StateFormula parseAnd(And formula) {
+    private StateFormula processAnd(And formula) {
         // p and q = enf(p) AND enf(q)
         return new And(
                 translateENF(formula.left),
@@ -60,7 +60,7 @@ public class ENFTranslator {
      * @param formula of class BoolProp
      * @return StateFormula
      */
-    private StateFormula parseBoolProp(BoolProp formula) {
+    private StateFormula processBoolProp(BoolProp formula) {
         // true = true, false = Not(true)
         if (formula.value) {
             return formula;
@@ -84,7 +84,7 @@ public class ENFTranslator {
      * @param formula of type ForAll
      * @return a StateFormula
      */
-    private StateFormula parseForAll(ForAll formula) {
+    private StateFormula processForAll(ForAll formula) {
         switch (formula.pathFormula.getFormulaType()) {
             case NEXT: return forAllNext((Next) formula.pathFormula);
             case EVENTUALLY: return forAllEventually((Eventually) formula.pathFormula);
@@ -101,7 +101,7 @@ public class ENFTranslator {
      * @param formula of type ThereExists
      * @return a StateFormula
      */
-    private StateFormula parseThereExists(ThereExists formula) {
+    private StateFormula processThereExists(ThereExists formula) {
         switch (formula.pathFormula.getFormulaType()) {
             case ALWAYS: return thereExistsAlways((Always) formula.pathFormula);
             case EVENTUALLY:return thereExistsEventually((Eventually) formula.pathFormula);
@@ -117,7 +117,7 @@ public class ENFTranslator {
      * @param formula of type NOT
      * @return a StateFormula
      */
-    private StateFormula parseNot(Not formula) {
+    private StateFormula processNot(Not formula) {
         // Not(q) = Not(enf(q))
         return new Not(
                 translateENF(formula.stateFormula)
@@ -130,7 +130,7 @@ public class ENFTranslator {
      * @param formula of type OR
      * @return a StateFormula
      */
-    private StateFormula parseOr(Or formula) {
+    private StateFormula processOr(Or formula) {
         // q or p = Not(Not(enf(q)) AND Not(enf(p)))
         return new Not(
                 new And(
