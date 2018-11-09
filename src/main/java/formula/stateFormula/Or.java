@@ -3,6 +3,8 @@ package formula.stateFormula;
 public class Or extends StateFormula {
     public final StateFormula left;
     public final StateFormula right;
+    private String formulaType = "Or";
+
 
     public Or(StateFormula left, StateFormula right) {
         this.left = left;
@@ -16,6 +18,11 @@ public class Or extends StateFormula {
         buffer.append(" || ");
         right.writeToBuffer(buffer);
         buffer.append(")");
+    }
+
+    @Override
+    public String getFormulaType() {
+        return formulaType;
     }
 
 }

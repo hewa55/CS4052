@@ -9,4 +9,5 @@ public abstract class StateFormula {
         writeToBuffer(buffer);
         return buffer.toString();
     }
+    abstract public String getFormulaType();
 }
