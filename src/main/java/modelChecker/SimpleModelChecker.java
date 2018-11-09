@@ -32,7 +32,7 @@ public class SimpleModelChecker implements ModelChecker {
         model.setTransitions();
         model.prepare();
 
-        StateFormula enfVersion = enfTranslator.parseENF(finalFormula);
+        StateFormula enfVersion = enfTranslator.translateENF(finalFormula);
         sat.setModel(model);
 
         ArrayList<State> satisfactory_states = sat.sat(model.getStateArrayList() , enfVersion);

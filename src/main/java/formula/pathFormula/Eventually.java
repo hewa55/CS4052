@@ -8,6 +8,8 @@ public class Eventually extends PathFormula {
     public final StateFormula stateFormula;
     private Set<String> leftActions;
     private Set<String> rightActions;
+    private String formulaType = "Eventually";
+
 
     public Eventually(StateFormula stateFormula, Set<String> leftActions, Set<String> rightActions) {
         super();
@@ -29,6 +31,11 @@ public class Eventually extends PathFormula {
         buffer.append(FormulaParser.EVENTUALLY_TOKEN);
         stateFormula.writeToBuffer(buffer);
 
+    }
+
+    @Override
+    public String getFormulaType(){
+        return formulaType;
     }
 
 }

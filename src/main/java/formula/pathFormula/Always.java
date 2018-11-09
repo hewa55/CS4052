@@ -7,6 +7,8 @@ import java.util.*;
 public class Always extends PathFormula {
     public final StateFormula stateFormula;
     private Set<String> actions = new HashSet<String>();
+    private String formulaType = "Always";
+
 
     public Always(StateFormula stateFormula, Set<String> actions) {
         this.stateFormula = stateFormula;
@@ -23,6 +25,11 @@ public class Always extends PathFormula {
         stateFormula.writeToBuffer(buffer);
         ;
 
+    }
+
+    @Override
+    public String getFormulaType(){
+        return formulaType;
     }
 
 }

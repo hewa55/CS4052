@@ -1,202 +1,262 @@
 package modelChecker;
 
-import formula.pathFormula.Always;
-import formula.pathFormula.Eventually;
-import formula.pathFormula.Next;
-import formula.pathFormula.Until;
+import formula.pathFormula.*;
 import formula.stateFormula.*;
-import model.State;
 
 import java.util.HashSet;
 
-public class ENF {
+public class ENFTranslator {
+    private static final String ATOMIC = "AtomicProp";
+    private static final String AND = "And";
+    private static final String BOOL = "BoolProp";
+    private static final String FOR_ALL = "ForAll";
+    private static final String NOT = "Not";
+    private static final String OR = "Or";
+    private static final String THERE_EXISTS = "ThereExists";
+    private static final String ALWAYS = "Always";
+    private static final String EVENTUALLY = "Eventually";
+    private static final String NEXT = "Next";
+    private static final String UNTIL = "Until";
 
-    public StateFormula parseENF(StateFormula formula) {
-        String formula_type = formula.getClass().getName().substring(formula.getClass().getName().lastIndexOf('.') + 1);
-        switch (formula_type) {
-            case "AtomicProp":
+
+    public StateFormula translateENF(StateFormula formula) {
+        switch (formula.getFormulaType()) {
+            case ATOMIC:
                 return formula;
-            case "And":
-                return parseAnd((And) formula);
-            case "BoolProp":
-                return parseBoolProp((BoolProp) formula);
-            case "ForAll":
-                return parseForAll((ForAll) formula);
-            case "Not":
-                return parseNot((Not) formula);
-            case "Or":
-                return parseOr((Or) formula);
-            case "ThereExists":
-                return parseThereExists((ThereExists) formula);
+            case AND:
+                return processAnd((And) formula);
+            case BOOL:
+                return processBoolProp((BoolProp) formula);
+            case FOR_ALL:
+                return processForAll((ForAll) formula);
+            case NOT:
+                return processNot((Not) formula);
+            case OR:
+                return processOr((Or) formula);
+            case THERE_EXISTS:
+                return processThereExists((ThereExists) formula);
             default:
                 return null;
         }
     }
 
-
-    private StateFormula parseAnd(And formula) {
-        // P and Q = enf(P) AND enf(Q)
+    /**
+     * ENF parser AND CTL
+     *
+     * @param formula of class AND
+     * @return StateFormula
+     */
+    private StateFormula processAnd(And formula) {
+        // p and q = enf(p) AND enf(q)
         return new And(
-                parseENF(formula.left),
-                parseENF(formula.right)
+                translateENF(formula.left),
+                translateENF(formula.right)
         );
     }
 
-    private StateFormula parseBoolProp(BoolProp formula) {
+    /**
+     * ENF parser BoolProp CTL
+     *
+     * @param formula of class BoolProp
+     * @return StateFormula
+     */
+    private StateFormula processBoolProp(BoolProp formula) {
         // true = true, false = Not(true)
-        return (formula.value) ? formula : new Not(new BoolProp(true));
+        if (formula.value) {
+            return formula;
+        } else {
+            return new Not(new BoolProp(true));
+        }
     }
 
-    private StateFormula parseForAll(ForAll formula) {
-        String path_formula_name = formula.pathFormula.getClass().getName().substring(formula.pathFormula.getClass().getName().lastIndexOf('.') + 1);
-        switch(path_formula_name) {
-            // ForAll(Always(P)) = Not(ThereExists(TRUE U Not(enf(P))))
-            case "Always":
-                Always alwaysFormula = (Always) formula.pathFormula;
-                return new Not(
-                        new ThereExists(
-                               new Until(
-                                       new BoolProp(true),
-                                       new Not(parseENF(alwaysFormula.stateFormula)),
-                                       new HashSet<String>(),
-                                       alwaysFormula.getActions()
-                               )
-                        )
-                );
+    /**
+     * Simplifiy Not(ThereExists) Structure
+     *
+     * @param formula of class PathFormula
+     * @return An object of type NOT
+     */
+    private Not NotThereExists(PathFormula formula) {
+        return new Not(new ThereExists(formula));
+    }
 
-            // ForAll(Eventually(P)) = Not(ThereExists(Always(Not(enf(P)))))
-            case "Eventually":
-                Eventually eventuallyFormula = (Eventually) formula.pathFormula;
-                return new Not(
-                        new ThereExists(
-                                new Always(
-                                        new Not(parseENF(eventuallyFormula.stateFormula)),
-                                        eventuallyFormula.getRightActions()
-                                )
-                        )
-                );
-
-            // ForAll(Next(P)) = Not(ThereExists(Next(Not(enf(P)))))
-            case "Next":
-                Next nextFormula = (Next) formula.pathFormula;
-                return new Not(
-                        new ThereExists(
-                                new Next(
-                                        new Not(parseENF(nextFormula.stateFormula)),
-                                        nextFormula.getActions()
-                                )
-                        )
-                );
-
-            /** ForAll(P U Q) =
-             * Not(ThereExists(Not(enf(Q)) U (Not(enf(P)) AND Not(enf(Q)))))
-             * AND
-             * Not(ThereExists(Always(Not(enf(Q)))))
-             */
-            case "Until":
-                Until untilFormula = (Until) formula.pathFormula;
-                StateFormula enfP = parseENF(untilFormula.left);
-                StateFormula enfQ = parseENF(untilFormula.right);
-
-                StateFormula rightFinalAnd = new Not(
-                        new ThereExists(
-                                new Always(
-                                        new Not(enfQ),
-                                        untilFormula.getRightActions()
-                                )
-                        )
-                );
-
-                StateFormula leftFinalAnd = new Not(
-                        new ThereExists(
-                                new Until(
-                                        new Not(enfQ),
-                                        new And(
-                                                new Not(enfP),
-                                                new Not(enfQ)
-                                        ),
-                                        untilFormula.getLeftActions(),
-                                        untilFormula.getRightActions()
-                                )
-                        )
-                );
-                return new And(leftFinalAnd, rightFinalAnd);
-
-            default: return null;
+    /**
+     * ENF parsper ForAll CTL
+     *
+     * @param formula of type ForAll
+     * @return a StateFormula
+     */
+    private StateFormula processForAll(ForAll formula) {
+        switch (formula.pathFormula.getFormulaType()) {
+            case NEXT:
+                return forAllNext((Next) formula.pathFormula);
+            case EVENTUALLY:
+                return forAllEventually((Eventually) formula.pathFormula);
+            case UNTIL:
+                return forAllUntil((Until) formula.pathFormula);
+            case ALWAYS:
+                return forAllAlways((Always) formula.pathFormula);
+            default:
+                return null;
         }
 
     }
 
-    private StateFormula parseNot(Not formula) {
-        // Not(P) = Not(enf(P))
+    /**
+     * ENF parser ThereExists CTL
+     *
+     * @param formula of type ThereExists
+     * @return a StateFormula
+     */
+    private StateFormula processThereExists(ThereExists formula) {
+        switch (formula.pathFormula.getFormulaType()) {
+            case ALWAYS:
+                return thereExistsAlways((Always) formula.pathFormula);
+            case EVENTUALLY:
+                return thereExistsEventually((Eventually) formula.pathFormula);
+            case NEXT:
+                return thereExistsNext((Next) formula.pathFormula);
+            case UNTIL:
+                return thereExistsUntil((Until) formula.pathFormula);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * ENF parser NOT CTL
+     *
+     * @param formula of type NOT
+     * @return a StateFormula
+     */
+    private StateFormula processNot(Not formula) {
+        // Not(q) = Not(enf(q))
         return new Not(
-                parseENF(formula.stateFormula)
+                translateENF(formula.stateFormula)
         );
     }
 
-
-    private StateFormula parseOr(Or formula) {
-        // P or Q = Not(Not(enf(P)) AND Not(enf(Q)))
+    /**
+     * ENF parser OR CTL
+     *
+     * @param formula of type OR
+     * @return a StateFormula
+     */
+    private StateFormula processOr(Or formula) {
+        // q or p = Not(Not(enf(q)) AND Not(enf(p)))
         return new Not(
                 new And(
-                        new Not(parseENF(formula.left)),
-                        new Not(parseENF(formula.right))
+                        new Not(translateENF(formula.left)),
+                        new Not(translateENF(formula.right))
                 )
         );
     }
 
-
-    private StateFormula parseThereExists(ThereExists formula) {
-        String path_formula_name = formula.pathFormula.getClass().getName().substring(formula.pathFormula.getClass().getName().lastIndexOf('.') + 1);
-        switch (path_formula_name) {
-
-            // ThereExists(Always(P)) = ThereExists(Always(enf(P)))
-            case "Always":
-                Always alwaysFormula = (Always) formula.pathFormula;
-                return new ThereExists(
-                        new Always(
-                                parseENF(alwaysFormula.stateFormula),
-                                alwaysFormula.getActions()
-                        )
-                );
-
-            // ThereExists(Eventually(P)) = ThereExists( TRUE U enf(P))
-            case "Eventually":
-                Eventually eventuallyFormula = (Eventually) formula.pathFormula;
-                return new ThereExists(
-                        new Until(
-                                new BoolProp(true),
-                                parseENF(eventuallyFormula.stateFormula),
-                                eventuallyFormula.getLeftActions(),
-                                eventuallyFormula.getRightActions()
-                        )
-
-                );
-
-            // ThereExists(Next(P)) = ThereExists(Next(enf(P)))
-            case "Next":
-                Next nextFormula = (Next) formula.pathFormula;
-                return new ThereExists(
-                        new Next(
-                                parseENF(nextFormula.stateFormula),
-                                nextFormula.getActions()
-                        )
-                );
-
-            // ThereExists(P U Q) = ThereExists(enf(P) U enf(Q))
-            case "Until":
-                Until untilFormula = (Until) formula.pathFormula;
-                return new ThereExists(
-                        new Until(
-                                parseENF(untilFormula.left),
-                                parseENF(untilFormula.right),
-                                untilFormula.getLeftActions(),
-                                untilFormula.getRightActions()
-                        )
-                );
-
-            default: return null;
-        }
+    //
+    // FORALL HELPER FUNCTIONS
+    //
+    private Not forAllAlways(Always formula) {
+        // ForAll(Always(q)) equals Not(ThereExists(TRUE U Not(enf(q))))
+        return NotThereExists(
+                new Until(
+                        new BoolProp(true),
+                        new Not(translateENF(formula.stateFormula)),
+                        new HashSet<String>(),
+                        formula.getActions()
+                ));
     }
 
+    private Not forAllNext(Next formula) {
+        // ForAll(Next(q)) equals Not(ThereExists(Next(Not(enf(q)))))
+        return NotThereExists(
+                new Next(
+                        new Not(translateENF(formula.stateFormula)),
+                        formula.getActions()
+                ));
+    }
+
+    private Not forAllEventually(Eventually formula) {
+        // ForAll(EVENTUALLY(q)) equals Not(ThereExists(Always(Not(enf(q)))))
+        return NotThereExists(
+                new Always(
+                        new Not(translateENF(formula.stateFormula)),
+                        formula.getRightActions()
+                ));
+    }
+
+    private And forAllUntil(Until formula) {
+        // ForAll(q U p) equals
+        // Not(ThereExists(Not(enf(q)) U (Not(enf(p)) AND Not(enf(q)))))
+        // AND Not(ThereExists(Always(Not(enf(q)))))
+        StateFormula enfQ = translateENF(formula.right);
+        StateFormula enfP = translateENF(formula.left);
+
+        StateFormula leftAnd = NotThereExists(
+                new Until(
+                        new Not(enfQ),
+                        new And(
+                                new Not(enfP),
+                                new Not(enfQ)
+                        ),
+                        formula.getLeftActions(),
+                        formula.getRightActions()
+                ));
+
+        StateFormula rightAnd = NotThereExists(
+                new Always(
+                        new Not(enfQ),
+                        formula.getRightActions()
+                ));
+
+
+        return new And(leftAnd, rightAnd);
+    }
+
+
+    //
+    // THERE EXISTS HELPER FUNCTIONS
+    //
+    private ThereExists thereExistsAlways(Always formula) {
+        // ThereExists(Always(q)) = ThereExists(Always(enf(q)))
+        return new ThereExists(
+                new Always(
+                        translateENF(formula.stateFormula),
+                        formula.getActions()
+                )
+        );
+    }
+
+    private ThereExists thereExistsEventually(Eventually formula) {
+        // ThereExists(EVENTUALLY(q)) = ThereExists( TRUE U enf(q))
+        return new ThereExists(
+                new Until(
+                        new BoolProp(true),
+                        translateENF(formula.stateFormula),
+                        formula.getLeftActions(),
+                        formula.getRightActions()
+                )
+
+        );
+    }
+
+    private ThereExists thereExistsNext(Next formula) {
+        // ThereExists(Next(q)) = ThereExists(Next(enf(q)))
+        return new ThereExists(
+                new Next(
+                        translateENF(formula.stateFormula),
+                        formula.getActions()
+                )
+        );
+    }
+
+    private ThereExists thereExistsUntil(Until formula) {
+        // ThereExists(q U p) = ThereExists(enf(q) U enf(p))
+        return new ThereExists(
+                new Until(
+                        translateENF(formula.left),
+                        translateENF(formula.right),
+                        formula.getLeftActions(),
+                        formula.getRightActions()
+                )
+        );
+    }
 }

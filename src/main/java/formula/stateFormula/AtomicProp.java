@@ -2,6 +2,8 @@ package formula.stateFormula;
 
 public class AtomicProp extends StateFormula {
     public final String label;
+    private String formulaType = "AtomicProp";
+
 
     public AtomicProp(String label) {
         this.label = label;
@@ -12,4 +14,8 @@ public class AtomicProp extends StateFormula {
         buffer.append(" " + label + " ");
     }
 
+    @Override
+    public String getFormulaType() {
+        return formulaType;
+    }
 }

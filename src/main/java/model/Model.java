@@ -55,7 +55,7 @@ public class Model {
 
     /**
      * returns a list of initial stateArrayList of the model.
-     * @param state
+     * @param
      * @return
      */
     public ArrayList<State> initialStates(){

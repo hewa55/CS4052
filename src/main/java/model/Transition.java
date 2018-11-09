@@ -11,6 +11,7 @@ public class  Transition {
     private String target;
     private String [] actions;
 
+    // added constructor to allow conversion to ENF
     Transition (String source, String target, String[] actions){
         this.source = source;
         this.target = target;

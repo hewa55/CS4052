@@ -7,6 +7,8 @@ import java.util.Set;
 public class Next extends PathFormula {
     public final StateFormula stateFormula;
     private Set<String> actions;
+    private String formulaType = "Next";
+
 
     public Next(StateFormula stateFormula, Set<String> actions) {
         this.stateFormula = stateFormula;
@@ -23,5 +25,11 @@ public class Next extends PathFormula {
         stateFormula.writeToBuffer(buffer);
         ;
     }
+
+    @Override
+    public String getFormulaType(){
+        return formulaType;
+    }
+
 
 }

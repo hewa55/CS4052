@@ -5,6 +5,8 @@ import formula.pathFormula.PathFormula;
 
 public class ThereExists extends StateFormula {
     public final PathFormula pathFormula;
+    private String formulaType = "ThereExists";
+
 
     public ThereExists(PathFormula pathFormula) {
         this.pathFormula = pathFormula;
@@ -16,5 +18,10 @@ public class ThereExists extends StateFormula {
         buffer.append(FormulaParser.THEREEXISTS_TOKEN);
         pathFormula.writeToBuffer(buffer);
         buffer.append(")");
+    }
+
+    @Override
+    public String getFormulaType() {
+        return formulaType;
     }
 }

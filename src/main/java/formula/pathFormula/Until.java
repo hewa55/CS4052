@@ -9,6 +9,8 @@ public class Until extends PathFormula {
     public final StateFormula right;
     private Set<String> leftActions;
     private Set<String> rightActions;
+    private String formulaType = "Until";
+
 
     public Until(StateFormula left, StateFormula right, Set<String> leftActions, Set<String> rightActions) {
         super();
@@ -34,5 +36,11 @@ public class Until extends PathFormula {
         right.writeToBuffer(buffer);
         buffer.append(")");
     }
+
+    @Override
+    public String getFormulaType(){
+        return formulaType;
+    }
+
 
 }
