@@ -11,6 +11,7 @@ import model.Transition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class SATCheck {
@@ -23,15 +24,12 @@ public class SATCheck {
     public ArrayList<State> sat(ArrayList<State> states, StateFormula formula) {
 
         ArrayList<State> satStates;
-        String type = formula.getClass().getName().substring(formula.getClass().getCanonicalName().lastIndexOf('.') + 1);
 
-        switch (type) {
+        switch (formula.getFormulaType()) {
 
             case "ThereExists":
                 PathFormula pathFormula = ((ThereExists) formula).pathFormula;
-                String typeP = pathFormula.getClass().getCanonicalName().substring(pathFormula.getClass().getCanonicalName().lastIndexOf('.') + 1);
-
-                switch (typeP) {
+                switch (pathFormula.getFormulaType()) {
                     case "Next":
                         satStates = satExNext((ThereExists)formula, states);
                         break;

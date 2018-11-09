@@ -58,6 +58,19 @@ public class ENF {
     }
 
     /**
+     * ENF parser NOT CTL
+     *
+     * @param formula of type NOT
+     * @return a StateFormula
+     */
+    private StateFormula processNot(Not formula) {
+        // Not(q) = Not(enf(q))
+        return new Not(
+                translateENF(formula.stateFormula)
+        );
+    }
+
+    /**
      * ENF parser BoolProp CTL
      *
      * @param formula of class BoolProp
@@ -123,19 +136,6 @@ public class ENF {
             default:
                 return null;
         }
-    }
-
-    /**
-     * ENF parser NOT CTL
-     *
-     * @param formula of type NOT
-     * @return a StateFormula
-     */
-    private StateFormula processNot(Not formula) {
-        // Not(q) = Not(enf(q))
-        return new Not(
-                translateENF(formula.stateFormula)
-        );
     }
 
     /**
