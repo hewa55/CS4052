@@ -19,7 +19,7 @@ public class ENFTranslator {
     private static final String UNTIL = "Until";
 
 
-    public StateFormula parseENF(StateFormula formula) {
+    public StateFormula translateENF(StateFormula formula) {
         switch (formula.getFormulaType()) {
             case ATOMIC:
                 return formula;
@@ -43,21 +43,21 @@ public class ENFTranslator {
     /**
      * ENF parser AND CTL
      *
-     * @param formula
+     * @param formula of class AND
      * @return StateFormula
      */
     private StateFormula parseAnd(And formula) {
         // p and q = enf(p) AND enf(q)
         return new And(
-                parseENF(formula.left),
-                parseENF(formula.right)
+                translateENF(formula.left),
+                translateENF(formula.right)
         );
     }
 
     /**
      * ENF parser BoolProp CTL
      *
-     * @param formula
+     * @param formula of class BoolProp
      * @return StateFormula
      */
     private StateFormula parseBoolProp(BoolProp formula) {
@@ -71,8 +71,8 @@ public class ENFTranslator {
 
     /**
      * Simplifiy Not(ThereExists) Structure
-     * @param formula
-     * @return
+     * @param formula of class PathFormula
+     * @return An object of type NOT
      */
     private Not NotThereExists(PathFormula formula) {
         return new Not(new ThereExists(formula));
@@ -81,8 +81,8 @@ public class ENFTranslator {
     /**
      * ENF parsper ForAll CTL
      *
-     * @param formula
-     * @return
+     * @param formula of type ForAll
+     * @return a StateFormula
      */
     private StateFormula parseForAll(ForAll formula) {
         switch (formula.pathFormula.getFormulaType()) {
@@ -98,8 +98,8 @@ public class ENFTranslator {
 
     /**
      * ENF parser ThereExists CTL
-     * @param formula
-     * @return
+     * @param formula of type ThereExists
+     * @return a StateFormula
      */
     private StateFormula parseThereExists(ThereExists formula) {
         switch (formula.pathFormula.getFormulaType()) {
@@ -114,28 +114,28 @@ public class ENFTranslator {
     /**
      * ENF parser NOT CTL
      *
-     * @param formula
-     * @return
+     * @param formula of type NOT
+     * @return a StateFormula
      */
     private StateFormula parseNot(Not formula) {
         // Not(q) = Not(enf(q))
         return new Not(
-                parseENF(formula.stateFormula)
+                translateENF(formula.stateFormula)
         );
     }
 
     /**
      * ENF parser OR CTL
      *
-     * @param formula
-     * @return
+     * @param formula of type OR
+     * @return a StateFormula
      */
     private StateFormula parseOr(Or formula) {
         // q or p = Not(Not(enf(q)) AND Not(enf(p)))
         return new Not(
                 new And(
-                        new Not(parseENF(formula.left)),
-                        new Not(parseENF(formula.right))
+                        new Not(translateENF(formula.left)),
+                        new Not(translateENF(formula.right))
                 )
         );
     }
@@ -143,41 +143,41 @@ public class ENFTranslator {
     //
     // FORALL HELPER FUNCTIONS
     //
-    private Not forAllAlways(Always alwaysFormula){
+    private Not forAllAlways(Always formula){
         // ForAll(Always(q)) equals Not(ThereExists(TRUE U Not(enf(q))))
         return NotThereExists(
                 new Until(
                         new BoolProp(true),
-                        new Not(parseENF(alwaysFormula.stateFormula)),
+                        new Not(translateENF(formula.stateFormula)),
                         new HashSet<String>(),
-                        alwaysFormula.getActions()
+                        formula.getActions()
                 ));
     }
 
-    private Not forAllNext(Next nextFormula){
+    private Not forAllNext(Next formula){
         // ForAll(Next(q)) equals Not(ThereExists(Next(Not(enf(q)))))
         return NotThereExists(
                 new Next(
-                        new Not(parseENF(nextFormula.stateFormula)),
-                        nextFormula.getActions()
+                        new Not(translateENF(formula.stateFormula)),
+                        formula.getActions()
                 ));
     }
 
-    private Not forAllEventually(Eventually eventuallyFormula){
+    private Not forAllEventually(Eventually formula){
         // ForAll(EVENTUALLY(q)) equals Not(ThereExists(Always(Not(enf(q)))))
         return NotThereExists(
                 new Always(
-                        new Not(parseENF(eventuallyFormula.stateFormula)),
-                        eventuallyFormula.getRightActions()
+                        new Not(translateENF(formula.stateFormula)),
+                        formula.getRightActions()
                 ));
     }
 
-    private And forAllUntil(Until untilFormula){
+    private And forAllUntil(Until formula){
         // ForAll(q U p) equals
         // Not(ThereExists(Not(enf(q)) U (Not(enf(p)) AND Not(enf(q)))))
         // AND Not(ThereExists(Always(Not(enf(q)))))
-        StateFormula enfQ = parseENF(untilFormula.right);
-        StateFormula enfP = parseENF(untilFormula.left);
+        StateFormula enfQ = translateENF(formula.right);
+        StateFormula enfP = translateENF(formula.left);
 
         StateFormula leftAnd = NotThereExists(
                 new Until(
@@ -186,14 +186,14 @@ public class ENFTranslator {
                                 new Not(enfP),
                                 new Not(enfQ)
                         ),
-                        untilFormula.getLeftActions(),
-                        untilFormula.getRightActions()
+                        formula.getLeftActions(),
+                        formula.getRightActions()
                 ));
 
         StateFormula rightAnd = NotThereExists(
                 new Always(
                         new Not(enfQ),
-                        untilFormula.getRightActions()
+                        formula.getRightActions()
                 ));
 
 
@@ -208,7 +208,7 @@ public class ENFTranslator {
         // ThereExists(Always(q)) = ThereExists(Always(enf(q)))
         return new ThereExists(
                 new Always(
-                        parseENF(formula.stateFormula),
+                        translateENF(formula.stateFormula),
                         formula.getActions()
                 )
         );
@@ -219,7 +219,7 @@ public class ENFTranslator {
         return new ThereExists(
                 new Until(
                         new BoolProp(true),
-                        parseENF(formula.stateFormula),
+                        translateENF(formula.stateFormula),
                         formula.getLeftActions(),
                         formula.getRightActions()
                 )
@@ -230,7 +230,7 @@ public class ENFTranslator {
         // ThereExists(Next(q)) = ThereExists(Next(enf(q)))
         return new ThereExists(
                 new Next(
-                        parseENF(formula.stateFormula),
+                        translateENF(formula.stateFormula),
                         formula.getActions()
                 )
         );
@@ -240,8 +240,8 @@ public class ENFTranslator {
         // ThereExists(q U p) = ThereExists(enf(q) U enf(p))
         return new ThereExists(
                 new Until(
-                        parseENF(formula.left),
-                        parseENF(formula.right),
+                        translateENF(formula.left),
+                        translateENF(formula.right),
                         formula.getLeftActions(),
                         formula.getRightActions()
                 )
