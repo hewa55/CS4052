@@ -9,15 +9,15 @@ import java.util.ArrayList;
 
 public class SimpleModelChecker implements ModelChecker {
 
-    ENFTranslator enfTranslator;
-    TraceFinder traceFinder;
-    Sat sat;
+    ENF enfTranslator;
+    Tracer traceFinder;
+    SATCheck sat;
     private String[] trace;
 
     public SimpleModelChecker() {
-        this.sat = new Sat();
-        this.enfTranslator = new ENFTranslator();
-        this.traceFinder = new TraceFinder();
+        this.sat = new SATCheck();
+        this.enfTranslator = new ENF();
+        this.traceFinder = new Tracer();
     }
 
     @Override

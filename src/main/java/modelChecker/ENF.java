@@ -9,27 +9,31 @@ import model.State;
 
 import java.util.HashSet;
 
-public class ENFTranslator {
+public class ENF {
 
     public StateFormula parseENF(StateFormula formula) {
         String formula_type = formula.getClass().getName().substring(formula.getClass().getName().lastIndexOf('.') + 1);
         switch (formula_type) {
-            case "AtomicProp": 	return formula;
-            case "And":			return parseAnd((And) formula);
-            case "BoolProp":	return parseBoolProp((BoolProp) formula);
-            case "ForAll":		return parseForAll((ForAll) formula);
-            case "Not":			return parseNot((Not) formula);
-            case "Or": 			return parseOr((Or) formula);
-            case "ThereExists":	return parseThereExists((ThereExists) formula);
-            default: 			return null;
+            case "AtomicProp":
+                return formula;
+            case "And":
+                return parseAnd((And) formula);
+            case "BoolProp":
+                return parseBoolProp((BoolProp) formula);
+            case "ForAll":
+                return parseForAll((ForAll) formula);
+            case "Not":
+                return parseNot((Not) formula);
+            case "Or":
+                return parseOr((Or) formula);
+            case "ThereExists":
+                return parseThereExists((ThereExists) formula);
+            default:
+                return null;
         }
     }
 
-    /**
-     * ENF formula for AND CTL
-     * @param formula
-     * @return
-     */
+
     private StateFormula parseAnd(And formula) {
         // P and Q = enf(P) AND enf(Q)
         return new And(
@@ -38,21 +42,11 @@ public class ENFTranslator {
         );
     }
 
-    /**
-     * ENF formula for BoolProp CTL
-     * @param formula
-     * @return
-     */
     private StateFormula parseBoolProp(BoolProp formula) {
         // true = true, false = Not(true)
         return (formula.value) ? formula : new Not(new BoolProp(true));
     }
 
-    /**
-     * ENF formula for ForAll CTL
-     * @param formula
-     * @return
-     */
     private StateFormula parseForAll(ForAll formula) {
         String path_formula_name = formula.pathFormula.getClass().getName().substring(formula.pathFormula.getClass().getName().lastIndexOf('.') + 1);
         switch(path_formula_name) {
@@ -133,11 +127,6 @@ public class ENFTranslator {
 
     }
 
-    /**
-     * ENF formula for NOT CTL
-     * @param formula
-     * @return
-     */
     private StateFormula parseNot(Not formula) {
         // Not(P) = Not(enf(P))
         return new Not(
@@ -145,11 +134,7 @@ public class ENFTranslator {
         );
     }
 
-    /**
-     * ENF formula for OR CTL
-     * @param formula
-     * @return
-     */
+
     private StateFormula parseOr(Or formula) {
         // P or Q = Not(Not(enf(P)) AND Not(enf(Q)))
         return new Not(
@@ -161,11 +146,6 @@ public class ENFTranslator {
     }
 
 
-    /**
-     * ENF formula for ThereExists CTL
-     * @param formula
-     * @return
-     */
     private StateFormula parseThereExists(ThereExists formula) {
         String path_formula_name = formula.pathFormula.getClass().getName().substring(formula.pathFormula.getClass().getName().lastIndexOf('.') + 1);
         switch (path_formula_name) {

@@ -7,15 +7,15 @@ import model.State;
 
 import java.util.ArrayList;
 
-public class TraceFinder {
+public class Tracer {
     ArrayList<String> trace = new ArrayList<>();
-    ENFTranslator enf;
-    Sat sat;
+    ENF enf;
+    SATCheck sat;
 
 
-    public TraceFinder() {
-        this.sat = new Sat();
-        this.enf = new ENFTranslator();
+    public Tracer() {
+        this.sat = new SATCheck();
+        this.enf = new ENF();
     }
 
     public String[] getTrace(Model model, StateFormula formula){

@@ -13,33 +13,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-public class Sat {
+public class SATCheck {
     private Model model;
 
     public void setModel(Model model){
         this.model = model;
     }
+
     public ArrayList<State> sat(ArrayList<State> states, StateFormula formula) {
+
         ArrayList<State> satStates;
         String type = formula.getClass().getName().substring(formula.getClass().getCanonicalName().lastIndexOf('.') + 1);
+
         switch (type) {
+
             case "ThereExists":
                 PathFormula pathFormula = ((ThereExists) formula).pathFormula;
                 String typeP = pathFormula.getClass().getCanonicalName().substring(pathFormula.getClass().getCanonicalName().lastIndexOf('.') + 1);
+
                 switch (typeP) {
                     case "Next":
                         satStates = satExNext((ThereExists)formula, states);
                         break;
                     case "Until":
-                        satStates = eUntil((ThereExists) formula, states);
+                        satStates = until((ThereExists) formula, states);
                         break;
                     case "Always":
-                        satStates = exAlways((ThereExists) formula,  states);
+                        satStates = always((ThereExists) formula,  states);
                         break;
                     default:
                         satStates = null;
                 }
                 break;
+
             case "BoolProp":
                 satStates = getSatBool((BoolProp)formula,states);
                 break;
@@ -114,131 +120,167 @@ public class Sat {
         }
         return result;
     }
-    //TODO: change names of variables of arraylists
-    public ArrayList<State> eUntil(ThereExists form,  ArrayList<State> states){
+
+
+
+    private void expandTree(int i, int j, ArrayList<State> afterStates, ArrayList<State> smth,
+                                 ArrayList<String> rightActions, ArrayList<State> removeAfters ) {
+
+        int count = 0 ;
+        ArrayList<Transition> inTrans = model.getToStateTrans(afterStates.get(j));
+
+        for (int k = 0; k < inTrans.size(); k++) {
+
+            String target = inTrans.get(i).getTarget();
+            String source = inTrans.get(i).getSource();
+
+            if(!(source.equals(smth.get(i).getName()) && target.equals( afterStates.get(j).getName()) ) ) {
+                inTrans.remove(k);
+                k--;
+            }
+
+        }
+
+        if (inTrans.isEmpty()) return;
+
+        for (int k = 0; k < inTrans.size(); k++) {
+
+            boolean exist = false;
+            for (int l = 0; l < inTrans.get(k).getActions().length ; l++) {
+                for (String rightAction : rightActions) {
+                    if (inTrans.get(i).getActions()[l].equals(rightAction)) {
+                        exist = true;
+                    }
+                }
+                if(!exist){
+                    count++;
+                }
+            }
+            if(count == inTrans.size()){
+                removeAfters.add(afterStates.get(j));
+            }
+        }
+
+    }
+
+    public ArrayList<State> until(ThereExists form,  ArrayList<State> states){
+
         PathFormula formula = form.pathFormula;
+
+        //Left Branch
         StateFormula left = ((Until)formula).left;
-        StateFormula right = ((Until)formula).right;
         ArrayList<State> leftStates = sat(states, left);
+
+        ArrayList<String> leftActions = new ArrayList<>();
+        Set<String> leftActionsAsSet = ((Until)formula).getLeftActions();
+        leftActions.addAll(leftActionsAsSet);
+
+        //Right Branch
+        StateFormula right = ((Until)formula).right;
         ArrayList<State> rightStates = sat(states, right);
 
         ArrayList<String> rightActions = new ArrayList<>();
         Set<String> rightActionsAsSet = ((Until)formula).getRightActions();
         rightActions.addAll(rightActionsAsSet);
 
-        ArrayList<String> leftActions = new ArrayList<>();
-        Set<String> leftActionsAsSet = ((Until)formula).getLeftActions();
-        leftActions.addAll(leftActionsAsSet);
+
 
         if(!((Until)formula).getRightActions().isEmpty()){
             rightStates = getPrevSat(rightStates, ((Until)formula).getRightActions());
         }
+
         if(!((Until)formula).getLeftActions().isEmpty()){
             leftStates = getPostSat(leftStates,rightStates, ((Until)formula).getLeftActions());
         }
+
         ArrayList<State> tempList = rightStates;
-        while(true){
-            ArrayList<State> smth = new ArrayList<State>(leftStates);
+
+        boolean validUntil = true;
+
+        while(validUntil){
+
+            ArrayList<State> smth = new ArrayList<>(leftStates);
             smth.removeAll(rightStates);
-//            leftStates.removeAll(rightStates);
+
             ArrayList<State> remove = new ArrayList<>();
+
             for (int i = 0; i < smth.size(); i++) {
+
                 ArrayList<State> afterStates = model.nextStates(smth.get(i));
                 ArrayList<State> removeAfters = new ArrayList<>();
+
                 for (int j = 0; j < afterStates.size(); j++) {
-                    if(rightActions.size()>0&&rightStates.contains(afterStates.get(j))){
-                        int count = 0 ;
-                        ArrayList<Transition> inTrans = model.getToStateTrans(afterStates.get(j));
-                        for (int k = 0; k < inTrans.size(); k++) {
-                            if(!(inTrans.get(i).getSource().equals(smth.get(i).getName())&&inTrans.get(i).getTarget().equals(afterStates.get(j).getName()))){
-                                inTrans.remove(k);
-                                k--;
-                            }
-                        }
-                        if(inTrans.size()==0) continue;
-                        for (int k = 0; k < inTrans.size(); k++) {
-                            boolean exist = false;
-                            for (int l = 0; l < inTrans.get(k).getActions().length ; l++) {
-                                for (String rightAction : rightActions) {
-                                    if (inTrans.get(i).getActions()[l].equals(rightAction)) {
-                                        exist = true;
-                                    }
-                                }
-                                if(!exist){
-                                    count++;
-                                }
-                            }
-                            if(count == inTrans.size()){
-                                removeAfters.add(afterStates.get(j));
-                            }
-                        }
+
+                    //Right
+                    if(rightActions.size()>0 && rightStates.contains(afterStates.get(j))){
+
+                        expandTree(i, j, afterStates, smth, rightActions, removeAfters);
 
                     }
 
-                    //TODO LEFT`
+                    //Left
                     if(leftActions.size() > 0 && smth.contains(afterStates.get(j))){
-                        int count = 0 ;
 
-                        ArrayList<Transition> inTrans = model.getToStateTrans(afterStates.get(j));
-                        for (int k = 0; k < inTrans.size(); k++) {
-                            if(!(inTrans.get(i).getSource().equals(smth.get(i).getName())&&inTrans.get(i).getTarget().equals(afterStates.get(j).getName()))){
-                                inTrans.remove(k);
-                                k--;
-                            }
-                        }
-                        if(inTrans.size()==0) continue;
-                        for (int k = 0; k < inTrans.size(); k++) {
-                            boolean exist = false;
-                            for (int l = 0; l < inTrans.get(k).getActions().length ; l++) {
-                                for (String leftAction : leftActions) {
-                                    if (inTrans.get(i).getActions()[l].equals(leftAction)) {
-                                        exist = true;
-                                    }
-                                }
-                                if(!exist){
-                                    count++;
-                                }
-                            }
-                            if(count == inTrans.size()){
-                                removeAfters.add(afterStates.get(j));
-                            }
-                        }
+                        expandTree(i, j, afterStates, smth, rightActions, removeAfters);
+
                     }
+
                 }
+
                 afterStates.removeAll(removeAfters);
                 afterStates.retainAll(tempList);
                 if(afterStates.isEmpty()) remove.add(leftStates.get(i));
             }
+
             smth.removeAll(remove);
-            if(smth.isEmpty()) break;
+
+            if(smth.isEmpty()) validUntil = false;
+
             tempList.addAll(smth);
+
         }
+
         return tempList;
     }
 
-    public ArrayList<State> exAlways(ThereExists form, ArrayList<State> states){
-        PathFormula formulaP = form.pathFormula;
 
+    private ArrayList<State> always(ThereExists form, ArrayList<State> states){
+
+        PathFormula formulaP = form.pathFormula;
         StateFormula formulaS = ((Always)formulaP).stateFormula;
         ArrayList<State> satisfactoryStates = sat(states,formulaS);
+
         if(!((Always)formulaP).getActions().isEmpty()){
             satisfactoryStates = getPrevSat(satisfactoryStates, ((Always)formulaP).getActions());
         }
-        ArrayList<State> tempList = new ArrayList<>(satisfactoryStates);
-        while(true){
-            ArrayList<State> stateList = new ArrayList<>(tempList);
+
+        ArrayList<State> satList = new ArrayList<>(satisfactoryStates);
+
+        boolean sat = true;
+        while(sat){
+
+            ArrayList<State> stateList = new ArrayList<>(satList);
             ArrayList<State> remove = new ArrayList<>();
-            for (State temp : stateList) {
-                ArrayList<State> afterStates = model.nextStates(temp);
-                afterStates.retainAll(tempList);
-                if (afterStates.isEmpty()) remove.add(temp);
+
+            for (State state : stateList) {
+
+                ArrayList<State> afterStates = model.nextStates(state);
+                afterStates.retainAll(satList);
+                if (afterStates.isEmpty()) remove.add(state);
+
             }
-            if(remove.size()==0) break;
-            tempList.removeAll(remove);
+
+            if(remove.size()==0) sat = false;
+            satList.removeAll(remove);
+
         }
-        return tempList;
+
+        return satList;
     }
-    public ArrayList<State> getPrevSat(ArrayList<State> states, Set<String> actions){
+
+
+    private ArrayList<State> getPrevSat(ArrayList<State> states, Set<String> actions){
+
         ArrayList<State> remove = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
             int count = 0;
@@ -261,6 +303,8 @@ public class Sat {
         states.removeAll(remove);
         return states;
     }
+
+
     public ArrayList<State> getPostSat(ArrayList<State> Lstates, ArrayList<State> Rstates, Set<String> actions){
         ArrayList<State> remove = new ArrayList<>();
         for (int i = 0; i < Lstates.size(); i++) {
