@@ -65,7 +65,7 @@ public class SATCheck {
         return satStates;
     }
 
-    public ArrayList<State> atomProp(AtomicProp form, ArrayList<State> states){
+    private ArrayList<State> atomProp(AtomicProp form, ArrayList<State> states){
 
         ArrayList<State> result = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
@@ -81,7 +81,7 @@ public class SATCheck {
         return states;
     }
 
-    public ArrayList<State> andSat(And form, ArrayList<State> states){
+    private ArrayList<State> andSat(And form, ArrayList<State> states){
         ArrayList<State> trueForLeft = sat(states,form.left);
         ArrayList<State> trueForRight = sat(states,form.right);
         ArrayList<State> intersection = new ArrayList<>();
@@ -93,21 +93,22 @@ public class SATCheck {
         return intersection;
     }
 
-    public ArrayList<State> notSat(Not form, ArrayList<State> states){
+    private ArrayList<State> notSat(Not form, ArrayList<State> states){
         ArrayList<State> satisfactoryStates = sat(states,form.stateFormula);
         ArrayList<State> result = new ArrayList<>(states);
         result.removeAll(satisfactoryStates);
         return result;
     }
 
-    public ArrayList<State> satExNext( ThereExists form, ArrayList<State> states ){
-        ArrayList<State> result = new ArrayList<>();
-        //TODO: CHECK
-        //if(!(form.pathFormula instanceof Next)) return null;
+    private ArrayList<State> satExNext( ThereExists form, ArrayList<State> states ) {
+
         StateFormula formula = ((Next)form.pathFormula).stateFormula;
         ArrayList<State> tempList = sat(states,formula);
+        ArrayList<State> result = new ArrayList<>();
+
+
         if(!((Next)form.pathFormula).getActions().isEmpty()){
-            //TODO: Change
+
             tempList = getPrevSat(tempList, ((Next)form.pathFormula).getActions());
         }
         for (State state : states) {
@@ -163,7 +164,7 @@ public class SATCheck {
 
     }
 
-    public ArrayList<State> until(ThereExists form,  ArrayList<State> states){
+    private ArrayList<State> until(ThereExists form,  ArrayList<State> states){
 
         PathFormula formula = form.pathFormula;
 
@@ -294,6 +295,7 @@ public class SATCheck {
                         empty = true;
                     }
                 }
+
                 if(empty){
                     count ++;
                 }
@@ -305,23 +307,27 @@ public class SATCheck {
     }
 
 
-    public ArrayList<State> getPostSat(ArrayList<State> Lstates, ArrayList<State> Rstates, Set<String> actions){
-        ArrayList<State> remove = new ArrayList<>();
-        for (int i = 0; i < Lstates.size(); i++) {
-            int count = 0;
-            ArrayList<Transition> outTrans = model.getFromStateTrans(Lstates.get(i));
-            if(outTrans.size()==0) continue;
+    private ArrayList<State> getPostSat(ArrayList<State> leftStates, ArrayList<State> rightStates, Set<String> actions) {
 
-            for (int j = 0; j < outTrans.size(); j++) {
+        ArrayList<State> toRemove = new ArrayList<>();
+
+        for (int i = 0; i < leftStates.size(); i++) {
+
+            int count = 0;
+            ArrayList<Transition> out = model.getFromStateTrans(leftStates.get(i));
+
+            if(out.size()==0) continue;
+
+            for (int j = 0; j < out.size(); j++) {
                 boolean empty = false;
                 boolean isFromRight = false;
-                for (int k = 0; k < outTrans.get(j).getActions().length; k++) {
-                    for (int l = 0; l < Rstates.size(); l++) {
-                        if(Rstates.get(l).getName().equals(outTrans.get(j).getActions()[k])){
+                for (int k = 0; k < out.get(j).getActions().length; k++) {
+                    for (int l = 0; l < rightStates.size(); l++) {
+                        if(rightStates.get(l).getName().equals(out.get(j).getActions()[k])){
                             isFromRight = true;
                         }
                     }
-                    if(actions.contains(outTrans.get(i).getActions()[k])){
+                    if(actions.contains(out.get(i).getActions()[k])){
                         empty = true;
                     }
                     if(empty&&isFromRight){
@@ -332,10 +338,11 @@ public class SATCheck {
                     count ++;
                 }
             }
-            if(count == outTrans.size()) remove.add(Lstates.get(i));
+            if(count == out.size()) toRemove.add(leftStates.get(i));
         }
-        Lstates.removeAll(remove);
-        return Lstates;
+
+        leftStates.removeAll(toRemove);
+        return leftStates;
     }
 
 
