@@ -5,6 +5,9 @@ import formula.stateFormula.*;
 
 import java.util.HashSet;
 
+/**
+ * Convert CTL to existential normal form (ENF) via this class
+ */
 public class ENF {
 
     private static final String ATOMIC = "AtomicProp";
@@ -18,7 +21,6 @@ public class ENF {
     private static final String EVENTUALLY = "Eventually";
     private static final String NEXT = "Next";
     private static final String UNTIL = "Until";
-
 
     public StateFormula translateENF(StateFormula formula) {
         switch (formula.getFormulaType()) {
@@ -71,7 +73,7 @@ public class ENF {
     }
 
     /**
-     * Simplifiy Not(ThereExists) Structure
+     * Simplify Not(ThereExists) Structure
      *
      * @param formula of class PathFormula
      * @return An object of type NOT
@@ -81,7 +83,7 @@ public class ENF {
     }
 
     /**
-     * ENF parsper ForAll CTL
+     * ENF parser ForAll CTL
      *
      * @param formula of type ForAll
      * @return a StateFormula
