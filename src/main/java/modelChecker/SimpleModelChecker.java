@@ -1,6 +1,7 @@
 package modelChecker;
 
 import formula.stateFormula.And;
+import formula.stateFormula.Not;
 import formula.stateFormula.StateFormula;
 import model.Model;
 import model.State;
@@ -9,15 +10,13 @@ import java.util.ArrayList;
 
 public class SimpleModelChecker implements ModelChecker {
 
-    ENF enfTranslator;
-    Tracer traceFinder;
+    ENF enfConverter;
     SATCheck sat;
     private String[] trace;
 
     public SimpleModelChecker() {
         this.sat = new SATCheck();
-        this.enfTranslator = new ENF();
-        this.traceFinder = new Tracer();
+        this.enfConverter = new ENF();
     }
 
     @Override
@@ -27,19 +26,18 @@ public class SimpleModelChecker implements ModelChecker {
 
         finalFormula = (constraint == null) ? finalFormula : new And(constraint, finalFormula);
 
-
         model.setStates();
         model.setTransitions();
         model.prepare();
 
-        StateFormula enfVersion = enfTranslator.translateENF(finalFormula);
+        StateFormula enfVersion = enfConverter.translateENF(finalFormula);
         sat.setModel(model);
 
         ArrayList<State> satisfactory_states = sat.sat(model.getStateArrayList() , enfVersion);
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
         if (!satisfy)
-            trace = traceFinder.getTrace(model, enfVersion);
+            trace = getTrace(model, enfVersion);
 
         return satisfy;
     }
@@ -55,11 +53,29 @@ public class SimpleModelChecker implements ModelChecker {
 
     public String getTraceAsString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < trace.length; i++) {
+
+        for (String traceString : trace) {
             sb.append(" -> ");
-            sb.append(trace[i]);
+            sb.append(traceString);
         }
+
         return sb.toString();
+    }
+
+    private String[] getTrace(Model model, StateFormula formula){
+
+        ArrayList<String> trace = new ArrayList<>();
+        StateFormula negationOfOriginalFormula = new Not(formula);
+
+        sat.setModel(model);
+
+        ArrayList<State> satisfactoryState = sat.sat(model.getStateArrayList(), negationOfOriginalFormula);
+        satisfactoryState.retainAll(model.initialStates());
+        for (State state: satisfactoryState) {
+            trace.add("" + state.getName());
+        }
+
+        return trace.toArray(new String[trace.size()]);
     }
 
 }

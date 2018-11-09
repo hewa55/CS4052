@@ -6,6 +6,7 @@ import formula.stateFormula.*;
 import java.util.HashSet;
 
 public class ENF {
+
     private static final String ATOMIC = "AtomicProp";
     private static final String AND = "And";
     private static final String BOOL = "BoolProp";
