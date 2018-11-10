@@ -112,7 +112,6 @@ public class FormulaParser {
 
     private StateFormula parseStateFormula(char nextChar) throws IOException {
 
-        System.out.println(nextChar);
         switch (nextChar) {
             case NOT_TOKEN:
                 return new Not(recursiveParseStateFormula());
@@ -140,7 +139,6 @@ public class FormulaParser {
 
     private PathFormula parsePathFormula() throws IOException {
         String actionSet1Identifier = parseOptionalIdentifier(true);
-        System.out.println(actionSet1Identifier);
         Set<String> actionSet1 = getActions(actionSet1Identifier);
         char nextChar = reader.nextChar();
         switch (nextChar) {
@@ -208,7 +206,6 @@ public class FormulaParser {
                     break;
                 }
             }
-            System.out.println("ParseOptional" + buffer.toString());
             return buffer.toString();
         } else {
             reader.unread(nextChar);

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import static modelChecker.Keywords.*;
 
 /**
- * Convert existential normal form (ENF) via this class
+ * Convert into existential normal form (ENF) via this class
  */
 public class ENF {
 
