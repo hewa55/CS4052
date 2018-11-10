@@ -24,7 +24,6 @@ public class SATCheck {
     }
 
     public ArrayList<State> sat(ArrayList<State> states, StateFormula formula) {
-
         ArrayList<State> satStates;
 
         switch (formula.getFormulaType()) {
@@ -55,7 +54,6 @@ public class SATCheck {
         switch (pathFormula.getFormulaType()) {
             case NEXT:
                 return satExNext(formula, states);
-
             case UNTIL:
                 return until(formula, states);
             case ALWAYS:
@@ -127,35 +125,43 @@ public class SATCheck {
                                  ArrayList<String> rightActions, ArrayList<State> removeAfters ) {
 
         int count = 0 ;
+        // transitions to get into the target state
         ArrayList<Transition> inTrans = model.getToStateTrans(afterStates.get(j));
-
+        // go through the transitions
         for (int k = 0; k < inTrans.size(); k++) {
 
             String target = inTrans.get(i).getTarget();
             String source = inTrans.get(i).getSource();
-
+            // if source of transition doesnt equal the current source state we investigate AND
+            // the target equals the after state we investigate, go in here
             if(!(source.equals(smth.get(i).getName()) && target.equals( afterStates.get(j).getName()) ) ) {
+                // remove the transition as we are not interested (i guess?)
                 inTrans.remove(k);
                 k--;
             }
 
         }
-
+        // if we now removed all the transitions we can return
         if (inTrans.isEmpty()) return;
-
+        // go through remaining transitions -- we know they have our source and target
+        // run through transitions
         for (int k = 0; k < inTrans.size(); k++) {
 
             boolean exist = false;
+            // go through each action of the transition
             for (int l = 0; l < inTrans.get(k).getActions().length ; l++) {
                 for (String rightAction : rightActions) {
                     if (inTrans.get(i).getActions()[l].equals(rightAction)) {
+                        // if the transition exists, we set boolean to true
                         exist = true;
                     }
                 }
+                // if our transition fulfils at least on of the possible actions, we increase the counter
                 if(!exist){
                     count++;
                 }
             }
+            // if each of the possible
             if(count == inTrans.size()){
                 removeAfters.add(afterStates.get(j));
             }
@@ -163,6 +169,37 @@ public class SATCheck {
 
     }
 
+    private ArrayList<State> until2(ThereExists form, ArrayList<State> states){
+        PathFormula formula = form.pathFormula;
+
+        //Left Branch
+        StateFormula left = ((Until)formula).left;
+        ArrayList<State> leftStates = sat(states, left);
+
+        ArrayList<String> leftActions = new ArrayList<>();
+        Set<String> leftActionsAsSet = ((Until)formula).getLeftActions();
+        leftActions.addAll(leftActionsAsSet);
+
+        //Right Branch
+        StateFormula right = ((Until)formula).right;
+        ArrayList<State> rightStates = sat(states, right);
+
+        ArrayList<String> rightActions = new ArrayList<>();
+        Set<String> rightActionsAsSet = ((Until)formula).getRightActions();
+        rightActions.addAll(rightActionsAsSet);
+        // in rightStates - all states which fulfil right bit of formula
+        // right actions all transitions which fulfil right part of formula
+        if(!rightActionsAsSet.isEmpty()){
+            //rightStates = getPostSat();
+        }
+        // check that the states on the right side can be transitioned into by rightActions
+        // check that the states on the left can be transitioned into by left actions
+
+        // check that there is a connection between leftStates and RightStates with b
+        System.exit(0);
+        return new ArrayList<State>();
+
+    }
     private ArrayList<State> until(ThereExists form,  ArrayList<State> states){
 
         PathFormula formula = form.pathFormula;
@@ -196,32 +233,39 @@ public class SATCheck {
         ArrayList<State> tempList = rightStates;
 
         boolean validUntil = true;
-
+        // check if valid is true
         while(validUntil){
-
+            // all states which fulfil left side of until statement
             ArrayList<State> smth = new ArrayList<>(leftStates);
+            // remove right states from the list, there might be loops we want to get rid of
             smth.removeAll(rightStates);
 
+            // arraylist for what to remove?
             ArrayList<State> remove = new ArrayList<>();
 
+            // go through each source states
             for (int i = 0; i < smth.size(); i++) {
-
+                // for state smth.get(i) get the states it can transition to
                 ArrayList<State> afterStates = model.nextStates(smth.get(i));
                 ArrayList<State> removeAfters = new ArrayList<>();
-
+                // go through every state the left side state can transition into
                 for (int j = 0; j < afterStates.size(); j++) {
 
                     //Right
+                    // of the possible states check that there are right actions AND
+                    // the possible target states contain the possible states from the source state
                     if(rightActions.size()>0 && rightStates.contains(afterStates.get(j))){
-
+                        // if they do expand the tree
                         expandTree(i, j, afterStates, smth, rightActions, removeAfters);
 
                     }
 
                     //Left
+                    // of the possible states check that there are right actions AND
+                    // the possible target states contain the possible states from the source state
                     if(leftActions.size() > 0 && smth.contains(afterStates.get(j))){
 
-                        expandTree(i, j, afterStates, smth, rightActions, removeAfters);
+                        expandTree(i, j, afterStates, smth, leftActions, removeAfters);
 
                     }
 
@@ -281,66 +325,88 @@ public class SATCheck {
 
     private ArrayList<State> getPrevSat(ArrayList<State> states, Set<String> actions){
 
-        ArrayList<State> remove = new ArrayList<>();
+        ArrayList<State> keep = new ArrayList<>();
+        // iterate through states
         for (int i = 0; i < states.size(); i++) {
             int count = 0;
-            ArrayList<Transition> inTrans = model.getToStateTrans(states.get(i));
-            if(inTrans.size()==0) continue;
+            // get all transitions which get us to the state
+            ArrayList<Transition> inwardsTrans = model.getToStateTrans(states.get(i));
+            // if there are none, skip this state
+            if(inwardsTrans.size()==0) continue;
 
-            for (int j = 0; j < inTrans.size(); j++) {
+            // go through each transition
+            for (int j = 0; j < inwardsTrans.size(); j++) {
                 boolean empty = false;
-                for (int k = 0; k < inTrans.get(i).getActions().length; k++) {
-                    if(actions.contains(inTrans.get(i).getActions()[k])){
+                Transition curr_transition = inwardsTrans.get(j);
+                // go through each action of the current transition
+                for (int k = 0; k < curr_transition.getActions().length; k++) {
+                    // if the possible actions contain one of the actions of this transition, we found a valid transition
+                    // into the state
+                    if(actions.contains(curr_transition.getActions()[k])){
                         empty = true;
                     }
                 }
-
+                // increases by one for every single additional correct transition
                 if(empty){
                     count ++;
                 }
             }
-            if(count == inTrans.size()) remove.add(states.get(i));
+            // if all transitions into this state contain the action, state is added to the "to be kept states"
+            if(count == inwardsTrans.size()) keep.add(states.get(i));
         }
-        states.removeAll(remove);
+        // remove the states without valid transitions
+        states.retainAll(keep);
         return states;
     }
 
-
+    // why is the called postSat - shouldnt this be the prev, because it refers to the left states?
     private ArrayList<State> getPostSat(ArrayList<State> leftStates, ArrayList<State> rightStates, Set<String> actions) {
 
         ArrayList<State> toRemove = new ArrayList<>();
-
+        // go through all states from the left size
         for (int i = 0; i < leftStates.size(); i++) {
 
             int count = 0;
+            // get the transitions out of the left side of the model
             ArrayList<Transition> out = model.getFromStateTrans(leftStates.get(i));
-
+            // if there are no transitions - skip this state
             if(out.size()==0) continue;
-
+            // iterate through the outwards transitions
             for (int j = 0; j < out.size(); j++) {
+                Transition curr_transition = out.get(j);
                 boolean empty = false;
                 boolean isFromRight = false;
-                for (int k = 0; k < out.get(j).getActions().length; k++) {
+                // go through actions of the current transition
+                for (int k = 0; k < curr_transition.getActions().length; k++) {
+                    // iterate through each rightState
                     for (int l = 0; l < rightStates.size(); l++) {
-                        if(rightStates.get(l).getName().equals(out.get(j).getActions()[k])){
+                        // we compare a statement with a transition name here - will never be true, what is this for?
+                        // should read: ? if(rightStates.get(l).getName().equals(curr_transition.getTarget()))
+                        // if one of the right states names equal the target of the current transition - good. set boolean flag to true, found a valid transition
+                        if(rightStates.get(l).getName().equals(curr_transition.getActions()[k])){
                             isFromRight = true;
                         }
                     }
-                    if(actions.contains(out.get(i).getActions()[k])){
+                    // if the set of allowed actions contain the current action, set to true
+                    if(actions.contains(curr_transition.getActions()[k])){
                         empty = true;
                     }
-                    if(empty&&isFromRight){
-                        count++;
-                    }
+                    // if this is from the right bit of the formula and the curr_transaction allows this action, increase counter
+                    //if(empty&&isFromRight){
+                    //    count++;
+                    //}
                 }
-                if(empty){
+                // why do we increase this as well?
+                // took away the empty&&isFromRight
+                if(empty&&isFromRight){
                     count ++;
                 }
             }
+            // if all outwards bound transitions of this state are supported, add the current state
             if(count == out.size()) toRemove.add(leftStates.get(i));
         }
-
-        leftStates.removeAll(toRemove);
+        // remove or retain?
+        leftStates.retainAll(toRemove);
         return leftStates;
     }
 

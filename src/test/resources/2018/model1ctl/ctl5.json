@@ -1,4 +1,5 @@
 {
-	"formula": "E (p U r)",
-	"a": ["act1"]
+	"formula": "AaX (p)",
+	"a": ["act1"],
+	"b": ["act2"]
 }
