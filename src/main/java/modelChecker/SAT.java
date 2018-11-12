@@ -296,9 +296,9 @@ public class SAT {
                 boolean empty = false;
 
 
-                for (int k = 0; k < inTrans.get(i).getActions().length; k++) {
+                for (int k = 0; k < inTrans.get(j).getActions().length; k++) {
 
-                    if(actions.contains(inTrans.get(i).getActions()[k])){
+                    if(actions.contains(inTrans.get(j).getActions()[k])){
                         empty = true;
                     }
                 }
@@ -359,9 +359,4 @@ public class SAT {
         leftStates.removeAll(toRemove);
         return leftStates;
     }
-
-
-
-
-
 }

@@ -94,7 +94,24 @@ public class ModelChecker2018 {
             Model model = Model.parseModel("src/test/resources/2018/model1.json");
 
             //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/ctl2.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model1ctl/ctl5.json").parse();
+
+            SimpleModelChecker mc = new SimpleModelChecker();
+
+            assertFalse(mc.check(model, null, query));
+            System.out.println(mc.getTraceAsString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.toString());
+        }
+    }
+    @Test
+    public void CheckModel1GivenCtl1() {
+        try {
+            Model model = Model.parseModel("src/test/resources/2018/model1.json");
+            //mhmmmmmm
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/ctl1.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 

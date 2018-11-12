@@ -90,4 +90,17 @@ public class ENFChecks {
             fail(e.toString());
         }
     }
+    @Test
+    public void Parser() {
+        try {
+            ENF enf = new ENF();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model1ctl/ctl5.json").parse();
+            System.out.println(((ThereExists)query).pathFormula.getFormulaType());
+            System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
+            //assertEquals("[act1]",((Always)((ForAll)query).pathFormula).getActions().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.toString());
+        }
+    }
 }
