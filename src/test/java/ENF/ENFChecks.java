@@ -30,9 +30,6 @@ public class ENFChecks {
             ENF enf = new ENF();
             StateFormula query = new FormulaParser("src/test/resources/asCTLFormula/ctl1.json").parse();
 
-            //System.out.println(query.toString());
-            //System.out.println( ((Until)((ForAll)query).pathFormula).getLeftActions().toArray()[0] );
-            //System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("(!((E(!(p)U(!(q)&&!(p)))))&&!((EG!(p))))",enf.translateENF(query).toString().replaceAll(" ",""));
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,9 +42,6 @@ public class ENFChecks {
             ENF enf = new ENF();
             StateFormula query = new FormulaParser("src/test/resources/asCTLFormula/ctl2.json").parse();
 
-            //System.out.println(query.toString());
-            //System.out.println( ((Next)((ForAll)query).pathFormula).getActions().toArray()[0] );
-            //System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("!((EX!(p)))",enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("act1",((Next)((ForAll)query).pathFormula).getActions().toArray()[0]);
         } catch (IOException e) {
@@ -61,11 +55,6 @@ public class ENFChecks {
             ENF enf = new ENF();
             StateFormula query = new FormulaParser("src/test/resources/asCTLFormula/ctl3.json").parse();
 
-            //System.out.println(query.toString());
-            //System.out.println(query.getFormulaType());
-            //System.out.println( ((Eventually)((ThereExists)query).pathFormula).getRightActions() );
-            //System.out.println( ((Eventually)((ThereExists)query).pathFormula).getLeftActions() );
-            //System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("(E(TrueUp))",enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("[act2]",((Eventually)((ThereExists)query).pathFormula).getRightActions().toString());
             assertEquals("[act1]",((Eventually)((ThereExists)query).pathFormula).getLeftActions().toString());
@@ -80,11 +69,6 @@ public class ENFChecks {
             ENF enf = new ENF();
             StateFormula query = new FormulaParser("src/test/resources/asCTLFormula/ctl4.json").parse();
 
-            //System.out.println(query.toString());
-            //System.out.println(query.getFormulaType());
-            //System.out.println( ((Eventually)((ForAll)query).pathFormula).getRightActions() );
-            //System.out.println( ((Eventually)((ForAll)query).pathFormula).getLeftActions() );
-            //System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("!((EG!(p)))",enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("[act2]",((Eventually)((ForAll)query).pathFormula).getRightActions().toString());
             assertEquals("[act1]",((Eventually)((ForAll)query).pathFormula).getLeftActions().toString());
@@ -99,14 +83,8 @@ public class ENFChecks {
             ENF enf = new ENF();
             StateFormula query = new FormulaParser("src/test/resources/asCTLFormula/ctl5.json").parse();
 
-            //System.out.println(query.toString());
-            //System.out.println(query.getFormulaType());
-            //System.out.println( ((Always)((ForAll)query).pathFormula).getActions() );
-            //System.out.println( ((Eventually)((ForAll)query).pathFormula).getLeftActions() );
-            //System.out.println(enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("!((E(TrueU!(p))))",enf.translateENF(query).toString().replaceAll(" ",""));
             assertEquals("[act1]",((Always)((ForAll)query).pathFormula).getActions().toString());
-            //assertEquals("[act1]",((Eventually)((ForAll)query).pathFormula).getLeftActions().toString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
