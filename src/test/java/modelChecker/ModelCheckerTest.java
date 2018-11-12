@@ -32,7 +32,10 @@ public class ModelCheckerTest {
 
             assertFalse(mc.check(model, null, fairnessConstraint));
             System.out.println("test11: ");
+            //mc.getTrace();
             System.out.println(mc.getTraceAsString());
+
+
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
