@@ -1,4 +1,4 @@
 {
-	"formula": "A(t U f)",
+	"formula": "A(TRUE U t)",
 	"b": ["act1", "act2"]
 }

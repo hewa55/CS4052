@@ -4,17 +4,12 @@
 			"init": true,
 			"name": "s0",
 			"label": ["t"]
-		}, 
-		{
-			"init": false,
-			"name": "s1",
-			"label": ["f"]
 		}
 	],
 	"transitions": [
 		{
 			"source": "s0",
-			"target": "s1",
+			"target": "s0",
 			"actions": ["act1"]
 		}
 	]

@@ -18,7 +18,7 @@ public class ModelCheckerTest2 {
      * models and formulas for the mutual exclusion task.
      */
     @Test
-    public void CheckModel1Ctl1() {
+    public void CheckModel2Ctl1() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -34,7 +34,7 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void CheckModel1Ctl2() {
+    public void CheckModel2Ctl2() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -50,7 +50,7 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void CheckModel1Ctl3() {
+    public void CheckModel2Ctl3() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -68,7 +68,7 @@ public class ModelCheckerTest2 {
     // I think the formula means : There exists (a path) in which q is true until action act2 happens and then r is true
     // trace just gives --> s0 - but q is true in s0 from my understanding?
     @Test
-    public void CheckModel1Ctl4() {
+    public void CheckModel2Ctl4() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -84,7 +84,7 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void CheckModel1Ctl5() {
+    public void CheckModel2Ctl5() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -99,7 +99,7 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void CheckModel1Ctl6() {
+    public void CheckModel2Ctl6() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -117,7 +117,7 @@ public class ModelCheckerTest2 {
 
     // same here - it fails in s0, but s0 should be labeled q - can you make sense of it
     @Test
-    public void CheckModel1Ctl7() {
+    public void CheckModel2Ctl7() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
@@ -133,7 +133,7 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void CheckModel1Ctl7Constraint2() {
+    public void CheckModel2Ctl7Constraint2() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
