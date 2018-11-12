@@ -4,16 +4,13 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import formula.stateFormula.ThereExists;
 import org.junit.Test;
 
 import formula.FormulaParser;
 import formula.stateFormula.StateFormula;
-import modelChecker.ModelChecker;
-import modelChecker.SimpleModelChecker;
 import model.Model;
 
-public class ModelChecker2018 {
+public class ModelCheckerTest1 {
 
     /*
      * An example of how to set up and call the model building methods and make
@@ -88,6 +85,8 @@ public class ModelChecker2018 {
             fail(e.toString());
         }
     }
+
+    // See this test and the one below - Constraints works as Constraints removes s2 possebility
     @Test
     public void CheckModel1Ctl5() {
         try {
@@ -106,17 +105,47 @@ public class ModelChecker2018 {
         }
     }
     @Test
+    public void CheckModel1Ctl5Constraint() {
+        try {
+            Model model = Model.parseModel("src/test/resources/2018/model1.json");
+            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/Constraints/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/ctl1.json").parse();
+
+            SimpleModelChecker mc = new SimpleModelChecker();
+
+            assertTrue(mc.check(model, fairnessConstraint, query));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.toString());
+        }
+    }
+
+    @Test
     public void CheckModel1GivenCtl1() {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model1.json");
-            //mhmmmmmm
             //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
             StateFormula query = new FormulaParser("src/test/resources/2018/ctl1.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
-            //System.out.println(mc.getTraceAsString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.toString());
+        }
+    }
+    @Test
+    public void CheckModel1GivenCtl2() {
+        try {
+            Model model = Model.parseModel("src/test/resources/2018/model1.json");
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/ctl2.json").parse();
+
+            SimpleModelChecker mc = new SimpleModelChecker();
+
+            assertFalse(mc.check(model, null, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());

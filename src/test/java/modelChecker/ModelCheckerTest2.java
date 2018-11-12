@@ -1,43 +1,31 @@
 package modelChecker;
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-
-import org.junit.Test;
 
 import formula.FormulaParser;
 import formula.stateFormula.StateFormula;
-import modelChecker.ModelChecker;
-import modelChecker.SimpleModelChecker;
 import model.Model;
+import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.junit.Assert.*;
+
 public class ModelCheckerTest2 {
 
+    /*
+     * An example of how to set up and call the model building methods and make
+     * a call to the model checker itself. The contents of model.json,
+     * constraint1.json and ctl.json are just examples, you need to add new
+     * models and formulas for the mutual exclusion task.
+     */
     @Test
-    public void buildAndCheckModel21() {
+    public void CheckModel1Ctl1() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl1.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl1.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
-
-            assertTrue(mc.check(model, null, query));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.toString());
-        }
-    }
-
-    @Test
-    public void buildAndCheckModel22() {
-        try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
-
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl2.json").parse();
-
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
         } catch (IOException e) {
@@ -46,14 +34,14 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void buildAndCheckModel23() {
+    public void CheckModel1Ctl2() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl3.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl2.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
         } catch (IOException e) {
@@ -62,14 +50,13 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void buildAndCheckModel24() {
+    public void CheckModel1Ctl3() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl4.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl3.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
         } catch (IOException e) {
@@ -77,36 +64,19 @@ public class ModelCheckerTest2 {
             fail(e.toString());
         }
     }
-
+    // do you mind having a look @Carlos?
+    // I think the formula means : There exists (a path) in which q is true until action act2 happens and then r is true
+    // trace just gives --> s0 - but q is true in s0 from my understanding?
     @Test
-    public void buildAndCheckModel25() {
+    public void CheckModel1Ctl4() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl5.json").parse();
-
-            ModelChecker mc = new SimpleModelChecker();
-
-            assertTrue(mc.check(model, null, query));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.toString());
-        }
-    }
-
-    @Test
-    public void buildAndCheckModel26() {
-        try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
-
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl6.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl4.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
             assertFalse(mc.check(model, null, query));
-            System.out.println("test 26: ");
             System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,14 +84,13 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void buildAndCheckModel27() {
+    public void CheckModel1Ctl5() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl7.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl5.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
         } catch (IOException e) {
@@ -130,69 +99,56 @@ public class ModelCheckerTest2 {
         }
     }
     @Test
-    public void buildAndCheckModel28() {
+    public void CheckModel1Ctl6() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl8.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl6.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertTrue(mc.check(model, null, query));
+            assertFalse(mc.check(model, null, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
 
+    // same here - it fails in s0, but s0 should be labeled q - can you make sense of it
     @Test
-    public void buildAndCheckModel29() {
+    public void CheckModel1Ctl7() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl9.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl7.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertTrue(mc.check(model, null, query));
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.toString());
-        }
-    }
-    @Test
-    public void buildAndCheckModel210() {
-        try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
-
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl10.json").parse();
-
-            ModelChecker mc = new SimpleModelChecker();
-
-            assertTrue(mc.check(model, null, query));
+            assertFalse(mc.check(model, null, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
     @Test
-    public void buildAndCheckModel211() {
+    public void CheckModel1Ctl7Constraint2() {
         try {
-            Model model = Model.parseModel("src/test/resources/model2.json");
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/model2queries/ctl11.json").parse();
+            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/Constraints/constraint2.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl7.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertTrue(mc.check(model, null, query));
+            assertFalse(mc.check(model, fairnessConstraint, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
+
 
 }

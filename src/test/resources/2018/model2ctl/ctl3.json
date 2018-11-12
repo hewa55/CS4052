@@ -1,0 +1,5 @@
+{
+	"formula": "EF (p&&r)",
+	"a": ["act1", "act2"],
+	"b": ["act3"]
+}

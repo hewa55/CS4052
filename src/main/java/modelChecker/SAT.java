@@ -216,8 +216,8 @@ public class SAT {
 
         for (int k = 0; k < inTrans.size(); k++) {
 
-            String target = inTrans.get(i).getTarget();
-            String source = inTrans.get(i).getSource();
+            String target = inTrans.get(k).getTarget();
+            String source = inTrans.get(k).getSource();
 
             if(!(source.equals(smth.get(i).getName()) && target.equals( afterStates.get(j).getName()) ) ) {
                 inTrans.remove(k);
@@ -233,7 +233,7 @@ public class SAT {
             boolean exist = false;
             for (int l = 0; l < inTrans.get(k).getActions().length ; l++) {
                 for (String rightAction : rightActions) {
-                    if (inTrans.get(i).getActions()[l].equals(rightAction)) {
+                    if (inTrans.get(k).getActions()[l].equals(rightAction)) {
                         exist = true;
                     }
                 }

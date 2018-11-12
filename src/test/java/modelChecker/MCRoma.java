@@ -12,7 +12,7 @@ import modelChecker.ModelChecker;
 import modelChecker.SimpleModelChecker;
 import model.Model;
 
-public class ModelCheckerTest {
+public class MCRoma {
 
     /*
      * An example of how to set up and call the model building methods and make

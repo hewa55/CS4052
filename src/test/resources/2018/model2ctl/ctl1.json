@@ -1,0 +1,4 @@
+{
+	"formula": "EG(q && TRUE)",
+	"b": ["act1", "act2"]
+}
