@@ -1,4 +1,4 @@
 {
-	"formula": "A (!r U TRUE) ",
+	"formula": "AG(!r) ",
 	"b": ["act3"]
 }

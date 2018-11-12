@@ -35,6 +35,23 @@ public class ModelCheckerTest3 {
             fail(e.toString());
         }
     }
+    @Test
+    public void CheckModel3Ctl2() {
+        try {
+            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model3ctl/ctl2.json").parse();
+
+            SimpleModelChecker mc = new SimpleModelChecker();
+
+            assertTrue(mc.check(model, null, query));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail(e.toString());
+        }
+    }
+
 
 
 

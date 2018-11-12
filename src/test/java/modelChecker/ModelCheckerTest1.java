@@ -86,7 +86,8 @@ public class ModelCheckerTest1 {
         }
     }
 
-    // See this test and the one below - Constraints works as Constraints removes s2 possebility
+    // See this test and the one below - Constraints works as Constraints removes s2 possibility
+    // at least it should from my understanding, but still fails @Carlos
     @Test
     public void CheckModel1Ctl5() {
         try {
@@ -109,11 +110,12 @@ public class ModelCheckerTest1 {
         try {
             Model model = Model.parseModel("src/test/resources/2018/model1.json");
             StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/Constraints/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/ctl1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/2018/model1ctl/ctl5.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertTrue(mc.check(model, fairnessConstraint, query));
+            assertFalse(mc.check(model, fairnessConstraint, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
