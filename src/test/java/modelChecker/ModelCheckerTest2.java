@@ -76,8 +76,8 @@ public class ModelCheckerTest2 {
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertFalse(mc.check(model, null, query));
-            System.out.println(mc.getTraceAsString());
+            assertTrue(mc.check(model, null, query));
+            //System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
@@ -125,8 +125,8 @@ public class ModelCheckerTest2 {
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertFalse(mc.check(model, null, query));
-            System.out.println(mc.getTraceAsString());
+            assertTrue(mc.check(model, null, query));
+            //System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());

@@ -105,6 +105,7 @@ public class ModelCheckerTest1 {
             fail(e.toString());
         }
     }
+    // should pass with this constraint? maybe I am using the constraint wrong
     @Test
     public void CheckModel1Ctl5Constraint() {
         try {
@@ -114,8 +115,8 @@ public class ModelCheckerTest1 {
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertFalse(mc.check(model, fairnessConstraint, query));
-            System.out.println(mc.getTraceAsString());
+            assertTrue(mc.check(model, fairnessConstraint, query));
+
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
