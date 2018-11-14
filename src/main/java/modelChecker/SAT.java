@@ -28,8 +28,8 @@ public class SAT {
 
     public  ArrayList<State> satCheck(ArrayList<State> states, StateFormula formula) {
         //get formula type and split into two nodes
-        System.out.println("Recursive Call");
-        System.out.println(formula);
+        //System.out.println("Recursive Call");
+        //System.out.println(formula);
 
         ArrayList<State> satStates = new ArrayList<>();
         switch (formula.getFormulaType()) {
@@ -130,6 +130,8 @@ public class SAT {
 
     private ArrayList<State> until(ThereExists form,  ArrayList<State> states){
 
+        //System.out.println(form);
+
         PathFormula formula = form.pathFormula;
 
         //Left Branch
@@ -174,18 +176,20 @@ public class SAT {
                 ArrayList<State> afterStates = model.nextStates(smth.get(i));
                 ArrayList<State> removeAfters = new ArrayList<>();
 
+
                 for (int j = 0; j < afterStates.size(); j++) {
 
+                    //These are not being called, neither left nor right expand tree.
                     //Right
                     if(rightActions.size()>0 && rightStates.contains(afterStates.get(j))){
-
+                        //System.out.println("Right called: ");
                         expandTree(i, j, afterStates, smth, rightActions, removeAfters);
 
                     }
 
                     //Left
                     if(leftActions.size() > 0 && smth.contains(afterStates.get(j))){
-
+                        //System.out.println("Left called: ");
                         expandTree(i, j, afterStates, smth, rightActions, removeAfters);
 
                     }
@@ -226,6 +230,7 @@ public class SAT {
 
         }
 
+
         if (inTrans.isEmpty()) return;
 
         for (int k = 0; k < inTrans.size(); k++) {
@@ -241,10 +246,15 @@ public class SAT {
                     count++;
                 }
             }
+
             if(count == inTrans.size()){
+                //Possible bug here, need to pass the arraylist back. Also, nothing it being done here
                 removeAfters.add(afterStates.get(j));
+                System.out.println("Remove Afters size 2: " + removeAfters.size());
             }
         }
+
+
 
     }
 
@@ -322,8 +332,6 @@ public class SAT {
 
             int count = 0;
             ArrayList<Transition> out = model.getFromStateTrans(leftStates.get(i));
-
-
 
             if(out.size()==0) continue;
 

@@ -114,8 +114,14 @@ public class ModelCheckerTest1 {
             StateFormula query = new FormulaParser("src/test/resources/2018/model1ctl/ctl5.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
+            System.out.println("Failing test start:");
 
-            assertTrue(mc.check(model, fairnessConstraint, query));
+            try {
+                assertTrue(mc.check(model, fairnessConstraint, query));
+            } catch (AssertionError e) {
+                System.out.println(mc.getTraceAsString());
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
