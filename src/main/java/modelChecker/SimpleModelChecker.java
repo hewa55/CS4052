@@ -16,10 +16,13 @@ public class SimpleModelChecker implements ModelChecker {
 
     private SAT sat;
 
+    private SAT_rewritten sat_new;
+
     public SimpleModelChecker() {
         this.satChecker = new SATCheck();
         this.enfProcessor = new ENF();
         this.sat = new SAT();
+        this.sat_new = new SAT_rewritten();
 
     }
 
@@ -28,6 +31,7 @@ public class SimpleModelChecker implements ModelChecker {
         boolean satisfy;
         StateFormula finalFormula = query;
 
+        // instead of this, remove everything which oblidges to constraint from model
         if(constraint != null) {
             finalFormula = new And(constraint, finalFormula);
         }
@@ -39,10 +43,11 @@ public class SimpleModelChecker implements ModelChecker {
         StateFormula enfVersion = enfProcessor.translateENF(finalFormula);
         //satChecker.setModel(model);
 
-        sat.setModel(model);
-        sat.satCheck(model.getStateArrayList(), enfVersion);
+        sat_new.setModel(model);
+        sat_new.satCheck(model.getStateArrayList(), enfVersion);
 
-        ArrayList<State> satisfactory_states = sat.satCheck(model.getStateArrayList() , enfVersion);
+        ArrayList<State> satisfactory_states = sat_new.satCheck(model.getStateArrayList() , enfVersion);
+
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
         if (!satisfy)
@@ -81,7 +86,7 @@ public class SimpleModelChecker implements ModelChecker {
 
         satChecker.setModel(model);
 
-        ArrayList<State> satisfactoryState = sat.satCheck(model.getStateArrayList(), negationOfOriginalFormula);
+        ArrayList<State> satisfactoryState = sat_new.satCheck(model.getStateArrayList(), negationOfOriginalFormula);
         satisfactoryState.retainAll(model.initialStates());
         for (State state: satisfactoryState) {
             trace.add("" + state.getName());

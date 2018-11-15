@@ -1,4 +1,5 @@
 {
-	"formula": "A ((q) U (p&&r))",
-	"a": ["act1"]
+	"formula": "A ((q) aUb (p && r))",
+	"a": ["act1","act2"],
+	"b": ["act2","act3","act1"]
 }

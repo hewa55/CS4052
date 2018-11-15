@@ -109,10 +109,9 @@ public class ModelCheckerTest1 {
     @Test
     public void CheckModel1Ctl5Constraint() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model1.json");
+           Model model = Model.parseModel("src/test/resources/2018/model1.json");
             StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/Constraints/constraint1.json").parse();
             StateFormula query = new FormulaParser("src/test/resources/2018/model1ctl/ctl5.json").parse();
-
             SimpleModelChecker mc = new SimpleModelChecker();
             System.out.println("Failing test start:");
 

@@ -40,7 +40,7 @@ public class SAT {
                 satStates = satBool((BoolProp)formula,states);
                 break;
             case ATOMIC:
-                satStates = atoimc((AtomicProp) formula, states);
+                satStates = atomic((AtomicProp) formula, states);
                 break;
             case AND:
                satStates = satAND((And) formula, states);
@@ -80,7 +80,7 @@ public class SAT {
         }
     }
 
-    private ArrayList<State> atoimc(AtomicProp form, ArrayList<State> states){
+    private ArrayList<State> atomic(AtomicProp form, ArrayList<State> states){
         ArrayList<State> result = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
             String[] labels = states.get(i).getLabel();
@@ -138,18 +138,15 @@ public class SAT {
         StateFormula left = ((Until)formula).left;
         ArrayList<State> leftStates = satCheck(states, left);
 
-        ArrayList<String> leftActions = new ArrayList<>();
         Set<String> leftActionsAsSet = ((Until)formula).getLeftActions();
-        leftActions.addAll(leftActionsAsSet);
+        ArrayList<String> leftActions = new ArrayList<>(leftActionsAsSet);
 
         //Right Branch
         StateFormula right = ((Until)formula).right;
         ArrayList<State> rightStates = satCheck(states, right);
 
-        ArrayList<String> rightActions = new ArrayList<>();
         Set<String> rightActionsAsSet = ((Until)formula).getRightActions();
-        rightActions.addAll(rightActionsAsSet);
-
+        ArrayList<String> rightActions = new ArrayList<>(rightActionsAsSet);
 
 
         if(!((Until)formula).getRightActions().isEmpty()){
@@ -198,7 +195,7 @@ public class SAT {
 
                 afterStates.removeAll(removeAfters);
                 afterStates.retainAll(tempList);
-                if(afterStates.isEmpty()) remove.add(leftStates.get(i));
+                if(afterStates.isEmpty() && !leftStates.get(i).isInit()) remove.add(leftStates.get(i));
             }
 
             smth.removeAll(remove);
@@ -319,7 +316,7 @@ public class SAT {
             }
             if(count == inTrans.size()) remove.add(states.get(i));
         }
-        states.removeAll(remove);
+        states.retainAll(remove);
         return states;
     }
 
@@ -364,7 +361,7 @@ public class SAT {
             if(count == out.size()) toRemove.add(leftStates.get(i));
         }
 
-        leftStates.removeAll(toRemove);
+        leftStates.retainAll(toRemove);
         return leftStates;
     }
 }

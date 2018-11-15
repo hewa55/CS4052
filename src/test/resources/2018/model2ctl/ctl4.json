@@ -1,4 +1,5 @@
 {
-	"formula": "E (q Ua r)",
-	"a": ["act2","act3"]
+	"formula": "E (q bUa r)",
+	"a": ["act2","act3"],
+	"b": ["act2","act3","act1"]
 }

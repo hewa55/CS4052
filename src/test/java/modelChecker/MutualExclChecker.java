@@ -20,7 +20,7 @@ public class MutualExclChecker {
 
             ModelChecker mc = new SimpleModelChecker();
 
-            assertFalse(mc.check(model, null, query));
+            assertTrue(mc.check(model, null, query));
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());

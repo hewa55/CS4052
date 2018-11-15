@@ -20,7 +20,7 @@ public class MCRoma {
      * constraint1.json and ctl.json are just examples, you need to add new
      * models and formulas for the mutual exclusion task.
      */
-    @Test
+   /* @Test
     public void buildAndCheckModel11() {
         try {
             Model model = Model.parseModel("src/test/resources/model1.json");
@@ -40,7 +40,7 @@ public class MCRoma {
             e.printStackTrace();
             fail(e.toString());
         }
-    }
+    }*/
     @Test
     public void buildAndCheckModel12(){
         try {
@@ -62,7 +62,7 @@ public class MCRoma {
         try {
             Model model = Model.parseModel("src/test/resources/model1.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/model1queries/ctl4.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/model1queries/ctl3.json").parse();
 
             ModelChecker mc = new SimpleModelChecker();
 

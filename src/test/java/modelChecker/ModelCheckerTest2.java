@@ -115,7 +115,7 @@ public class ModelCheckerTest2 {
         }
     }
 
-    // same here - it fails in s0, but s0 should be labeled q - can you make sense of it
+    // should fail without the constraint
     @Test
     public void CheckModel2Ctl7() {
         try {
@@ -125,8 +125,8 @@ public class ModelCheckerTest2 {
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertTrue(mc.check(model, null, query));
-            //System.out.println(mc.getTraceAsString());
+            assertFalse(mc.check(model, null, query));
+            System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
@@ -142,8 +142,8 @@ public class ModelCheckerTest2 {
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
-            assertFalse(mc.check(model, fairnessConstraint, query));
-            System.out.println(mc.getTraceAsString());
+            assertTrue(mc.check(model, fairnessConstraint, query));
+            //System.out.println(mc.getTraceAsString());
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.toString());
