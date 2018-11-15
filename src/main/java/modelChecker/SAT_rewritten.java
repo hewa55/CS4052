@@ -94,7 +94,6 @@ public class SAT_rewritten {
     }
 
     private ArrayList<State> satThereExists(ThereExists formula,ArrayList<State> states){
-        // this doesn't enforce anything, there exists should allow
         PathFormula pathFormula = formula.pathFormula;
 
         switch (pathFormula.getFormulaType()) {
@@ -164,7 +163,8 @@ public class SAT_rewritten {
     }
 
     private ArrayList<State> prevSat(ArrayList<State> states, Set<String> actions){
-        // go through all the states and check if they have an incoming action equal to an element in actions, if they do, keep them
+        // go through all the states and check if they have an incoming action equal to an element in actions,
+        // if they do, keep them
         ArrayList<State> satStates = new ArrayList<>(states);
         for (State curr_state : states){
             ArrayList<Transition> transitions = model.getToStateTrans(curr_state);

@@ -31,23 +31,25 @@ public class SimpleModelChecker implements ModelChecker {
         boolean satisfy;
         StateFormula finalFormula = query;
 
-        // instead of this, remove everything which oblidges to constraint from model
-        if(constraint != null) {
-            finalFormula = new And(constraint, finalFormula);
-        }
 
         model.setStates();
         model.setTransitions();
         model.prepare();
+        ArrayList<State> modelStates = model.getStateArrayList();
+        sat_new.setModel(model);
+        // instead of this, remove everything which obliges to constraint from model
+        if(constraint != null) {
+            //finalFormula = new And(constraint, finalFormula);
+            // use the enf as formula
+            StateFormula enfConstraint = enfProcessor.translateENF(constraint);
+            sat_new.setModel(model);
+            // get all the states satisfying it and update the possible model states
+            modelStates = sat_new.satCheck(modelStates, enfConstraint);
+        }
 
         StateFormula enfVersion = enfProcessor.translateENF(finalFormula);
-        //satChecker.setModel(model);
 
-        sat_new.setModel(model);
-        sat_new.satCheck(model.getStateArrayList(), enfVersion);
-
-        ArrayList<State> satisfactory_states = sat_new.satCheck(model.getStateArrayList() , enfVersion);
-
+        ArrayList<State> satisfactory_states = sat_new.satCheck(modelStates , enfVersion);
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
         if (!satisfy)

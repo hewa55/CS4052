@@ -1,4 +1,4 @@
 {
-	"formula": "!EF (p && q) ",
+	"formula": "!(p && q) ",
 	"b": ["act3"]
 }
