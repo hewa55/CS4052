@@ -9,17 +9,14 @@ import model.Model;
 import model.State;
 import model.Transition;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static modelChecker.Keywords.*;
 import static modelChecker.Keywords.NOT;
 
-public class SAT_rewritten {
+public class SAT_Solver {
     private Model model;
-    private ArrayList<String> trace;
+    private List<String> trace;
 
 
 
@@ -27,11 +24,11 @@ public class SAT_rewritten {
         this.model = model;
     }
 
-    public  ArrayList<State> satCheck(ArrayList<State> states, StateFormula formula) {
+    public  List<State> satCheck(List<State> states, StateFormula formula) {
         //System.out.println("Recursive Call");
         //System.out.println(formula);
 
-        ArrayList<State> satStates = new ArrayList<>();
+        List<State> satStates = new ArrayList<>();
         switch (formula.getFormulaType()) {
             case THERE_EXISTS:
                 satStates = satThereExists((ThereExists) formula,states);
@@ -60,15 +57,15 @@ public class SAT_rewritten {
         return satStates;
     }
 
-    private ArrayList<State> satNOT(Not formula, ArrayList<State> states){
+    private List<State> satNOT(Not formula, List<State> states){
         // take formula and all which satisfy this formula get removed
-        ArrayList<State> satStates = satCheck(states,formula.stateFormula);
-        ArrayList<State> result = new ArrayList<>(states);
+        List<State> satStates = satCheck(states,formula.stateFormula);
+        List<State> result = new ArrayList<>(states);
         result.removeAll(satStates);
         return result;
     }
-    private ArrayList<State> atomic(AtomicProp form, ArrayList<State> states){
-        ArrayList<State> satStates = new ArrayList<>();
+    private List<State> atomic(AtomicProp form, List<State> states){
+        List<State> satStates = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
             State currentState = states.get(i);
             String[] labels = currentState.getLabel();
@@ -80,10 +77,10 @@ public class SAT_rewritten {
         return satStates;
     }
 
-    private ArrayList<State> satAND(And form, ArrayList<State> states){
-        ArrayList<State> trueLeft = satCheck(states,form.left);
-        ArrayList<State> trueRight = satCheck(states,form.right);
-        ArrayList<State> satStates = new ArrayList<>();
+    private List<State> satAND(And form, List<State> states){
+        List<State> trueLeft = satCheck(states,form.left);
+        List<State> trueRight = satCheck(states,form.right);
+        List<State> satStates = new ArrayList<>();
         // get the intersection between right and left
         for (State aTrueForLeft : trueLeft){
             if (trueRight.contains(aTrueForLeft)) {
@@ -93,7 +90,7 @@ public class SAT_rewritten {
         return satStates;
     }
 
-    private ArrayList<State> satThereExists(ThereExists formula,ArrayList<State> states){
+    private List<State> satThereExists(ThereExists formula,List<State> states){
         PathFormula pathFormula = formula.pathFormula;
 
         switch (pathFormula.getFormulaType()) {
@@ -107,19 +104,19 @@ public class SAT_rewritten {
         }
     }
 
-    private ArrayList<State> satNext(Next form, ArrayList<State> states ) {
+    private List<State> satNext(Next form, List<State> states ) {
         // get temporary sat states for the formula
-        ArrayList<State> tempSatStates = satCheck(states,form.stateFormula);
-        //ArrayList<State> result = new ArrayList<>();
+        List<State> tempSatStates = satCheck(states,form.stateFormula);
+        //List<State> result = new ArrayList<>();
         // if there are action requirements check that the temp sat states fulfil those
         if(!form.getActions().isEmpty()){
             tempSatStates = prevSat(tempSatStates, form.getActions());
         }
 
         // get all successors in a set
-        ArrayList<State> all_successors = new ArrayList<>();
+        List<State> all_successors = new ArrayList<>();
         for (State state : states) {
-            ArrayList<State> successors = model.nextStates(state);
+            List<State> successors = model.nextStates(state);
             // and keep the direct successors
             all_successors.addAll(successors);
         }
@@ -128,27 +125,27 @@ public class SAT_rewritten {
         return tempSatStates;
     }
 
-    private ArrayList<State> always(Always form, ArrayList<State> states){
+    private List<State> always(Always form, List<State> states){
         StateFormula formulaS = form.stateFormula;
-        ArrayList<State> satisfactoryStates = satCheck(states,formulaS);
+        List<State> satisfactoryStates = satCheck(states,formulaS);
 
         // enforce condition
         if(!form.getActions().isEmpty()){
             satisfactoryStates = prevSat(satisfactoryStates, form.getActions());
         }
 
-        ArrayList<State> satList = new ArrayList<>(satisfactoryStates);
+        List<State> satList = new ArrayList<>(satisfactoryStates);
 
         // go through the next states and continue to do so. every time one of the states fails, we remove it
         boolean sat = true;
         while(sat){
 
-            ArrayList<State> stateList = new ArrayList<>(satList);
-            ArrayList<State> remove = new ArrayList<>();
+            List<State> stateList = new ArrayList<>(satList);
+            List<State> remove = new ArrayList<>();
 
             for (State state : stateList) {
 
-                ArrayList<State> afterStates = model.nextStates(state);
+                List<State> afterStates = model.nextStates(state);
                 afterStates.retainAll(satList);
                 if (afterStates.isEmpty()) remove.add(state);
 
@@ -162,12 +159,12 @@ public class SAT_rewritten {
         return satList;
     }
 
-    private ArrayList<State> prevSat(ArrayList<State> states, Set<String> actions){
+    private List<State> prevSat(List<State> states, Set<String> actions){
         // go through all the states and check if they have an incoming action equal to an element in actions,
         // if they do, keep them
-        ArrayList<State> satStates = new ArrayList<>(states);
+        List<State> satStates = new ArrayList<>(states);
         for (State curr_state : states){
-            ArrayList<Transition> transitions = model.getToStateTrans(curr_state);
+            List<Transition> transitions = model.getToStateTrans(curr_state);
             transitions = extractRelevantTransition(transitions,curr_state);
             transitions = removeWrongAction(transitions,actions);
             // if there are no possible transitions into curr_state, remove the state from the possible states
@@ -178,7 +175,7 @@ public class SAT_rewritten {
         return satStates;
     }
 
-    private ArrayList<Transition> removeWrongAction(ArrayList<Transition> transitions, Set<String> actions){
+    private List<Transition> removeWrongAction(List<Transition> transitions, Set<String> actions){
         if(actions.size()==0){
             return transitions;
         }
@@ -197,8 +194,8 @@ public class SAT_rewritten {
         return transitions;
     }
 
-    private ArrayList<Transition> extractRelevantTransition(ArrayList<Transition> transitions, State target){
-        ArrayList<Transition> relevantTransitions = new ArrayList<>();
+    private List<Transition> extractRelevantTransition(List<Transition> transitions, State target){
+        List<Transition> relevantTransitions = new ArrayList<>();
         for (Transition transition : transitions){
             if(transition.getTarget().equals(target.getName())) {
                 relevantTransitions.add(transition);
@@ -206,17 +203,17 @@ public class SAT_rewritten {
         }
         return relevantTransitions;
     }
-    private ArrayList<State> until(Until formula,  ArrayList<State> states){
+    private List<State> until(Until formula,  List<State> states){
 
         //Left Branch
         StateFormula left = formula.left;
-        ArrayList<State> leftStates = satCheck(states, left);
+        List<State> leftStates = satCheck(states, left);
 
         Set<String> leftActionsAsSet = formula.getLeftActions();
 
         //Right Branch
         StateFormula right = formula.right;
-        ArrayList<State> rightStates = satCheck(states, right);
+        List<State> rightStates = satCheck(states, right);
 
         Set<String> rightActionsAsSet = formula.getRightActions();
 
@@ -233,7 +230,7 @@ public class SAT_rewritten {
         // for these states we satisfy the formula
         // repeat this until size doesn't change anymore
         boolean change = true;
-        ArrayList<State> satStates = new ArrayList<>(leftStates);
+        List<State> satStates = new ArrayList<>(leftStates);
 
         while (change){
 
@@ -263,10 +260,10 @@ public class SAT_rewritten {
         return satStates;
     }
 
-    private boolean connectToRight(State state, ArrayList<State> rightStates,Set<String> actions){
-        ArrayList<Transition> transitions = model.getFromStateTrans(state);
+    private boolean connectToRight(State state, List<State> rightStates,Set<String> actions){
+        List<Transition> transitions = model.getFromStateTrans(state);
         transitions = removeWrongAction(transitions,actions);
-        ArrayList<String> targets = getTargetsAsString(transitions);
+        List<String> targets = getTargetsAsString(transitions);
         for (State desiredConnection : rightStates) {
             if(targets.contains(desiredConnection.getName())){
                 return true;
@@ -274,8 +271,8 @@ public class SAT_rewritten {
         }
         return false;
     }
-    private ArrayList<String> getTargetsAsString(ArrayList<Transition> transitions){
-        ArrayList<String> targetsAsString =  new ArrayList<>();
+    private List<String> getTargetsAsString(List<Transition> transitions){
+        List<String> targetsAsString =  new ArrayList<>();
         for (int i = 0; i < transitions.size(); i++) {
             targetsAsString.add(transitions.get(i).getTarget());
         }
@@ -283,16 +280,16 @@ public class SAT_rewritten {
     }
     private boolean connectedToRightViaLeft(Set<State> visited,
                                             State state,
-                                            ArrayList<State> desiredConnections,
-                                            ArrayList<State> rightStates,
+                                            List<State> desiredConnections,
+                                            List<State> rightStates,
                                             Set<String> leftActions,
                                             Set<String> rightActions){
         // get transitions from the current State
-        ArrayList<Transition> transitions = model.getFromStateTrans(state);
+        List<Transition> transitions = model.getFromStateTrans(state);
         // remove the transitions not complying with actions
         transitions = removeWrongAction(transitions,leftActions);
         // get all the targets from those transitions (source is always state)
-        ArrayList<String> targets = getTargetsAsString(transitions);
+        List<String> targets = getTargetsAsString(transitions);
         // go through the States we want to connect to
         boolean valid= false;
         // if the state is connected to right, we can immediately return true

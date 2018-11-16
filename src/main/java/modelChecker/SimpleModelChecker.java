@@ -1,28 +1,24 @@
 package modelChecker;
 
-import formula.stateFormula.And;
 import formula.stateFormula.Not;
 import formula.stateFormula.StateFormula;
 import model.Model;
 import model.State;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleModelChecker implements ModelChecker {
 
     private ENF enfProcessor;
-    private SATCheck satChecker;
     private String[] trace;
 
-    private SAT sat;
 
-    private SAT_rewritten sat_new;
+    private SAT_Solver sat_new;
 
     public SimpleModelChecker() {
-        this.satChecker = new SATCheck();
         this.enfProcessor = new ENF();
-        this.sat = new SAT();
-        this.sat_new = new SAT_rewritten();
+        this.sat_new = new SAT_Solver();
 
     }
 
@@ -35,9 +31,9 @@ public class SimpleModelChecker implements ModelChecker {
         model.setStates();
         model.setTransitions();
         model.prepare();
-        ArrayList<State> modelStates = model.getStateArrayList();
+        List<State> modelStates = model.getStateArrayList();
         sat_new.setModel(model);
-        // instead of this, remove everything which obliges to constraint from model
+        // instead of this, remove everything which doesnt oblige to constraint from model
         if(constraint != null) {
             //finalFormula = new And(constraint, finalFormula);
             // use the enf as formula
@@ -49,7 +45,7 @@ public class SimpleModelChecker implements ModelChecker {
 
         StateFormula enfVersion = enfProcessor.translateENF(finalFormula);
 
-        ArrayList<State> satisfactory_states = sat_new.satCheck(modelStates , enfVersion);
+        List<State> satisfactory_states = sat_new.satCheck(modelStates , enfVersion);
 
         satisfy = satisfactory_states.containsAll(model.initialStates());
         if (!satisfy)
@@ -83,12 +79,12 @@ public class SimpleModelChecker implements ModelChecker {
 
     private String[] getTrace(Model model, StateFormula formula){
 
-        ArrayList<String> trace = new ArrayList<>();
+        List<String> trace = new ArrayList<>();
         StateFormula negationOfOriginalFormula = new Not(formula);
 
-        satChecker.setModel(model);
+        sat_new.setModel(model);
 
-        ArrayList<State> satisfactoryState = sat_new.satCheck(model.getStateArrayList(), negationOfOriginalFormula);
+        List<State> satisfactoryState = sat_new.satCheck(model.getStateArrayList(), negationOfOriginalFormula);
         satisfactoryState.retainAll(model.initialStates());
         for (State state: satisfactoryState) {
             trace.add("" + state.getName());
