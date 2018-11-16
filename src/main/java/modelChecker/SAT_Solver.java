@@ -19,19 +19,16 @@ public class SAT_Solver {
     private List<String> trace;
 
 
-
-    public void setModel(Model model){
+    public void setModel(Model model) {
         this.model = model;
     }
 
-    public  List<State> satCheck(List<State> states, StateFormula formula) {
-        //System.out.println("Recursive Call");
-        //System.out.println(formula);
+    public List<State> satCheck(List<State> states, StateFormula formula) {
 
         List<State> satStates = new ArrayList<>();
         switch (formula.getFormulaType()) {
             case THERE_EXISTS:
-                satStates = satThereExists((ThereExists) formula,states);
+                satStates = satThereExists((ThereExists) formula, states);
                 break;
             case BOOL:
                 // no need to do this. just remains the same
@@ -57,32 +54,33 @@ public class SAT_Solver {
         return satStates;
     }
 
-    private List<State> satNOT(Not formula, List<State> states){
+    private List<State> satNOT(Not formula, List<State> states) {
         // take formula and all which satisfy this formula get removed
-        List<State> satStates = satCheck(states,formula.stateFormula);
+        List<State> satStates = satCheck(states, formula.stateFormula);
         List<State> result = new ArrayList<>(states);
         result.removeAll(satStates);
         return result;
     }
-    private List<State> atomic(AtomicProp form, List<State> states){
+
+    private List<State> atomic(AtomicProp form, List<State> states) {
         List<State> satStates = new ArrayList<>();
         for (int i = 0; i < states.size(); i++) {
             State currentState = states.get(i);
             String[] labels = currentState.getLabel();
             // if state contains label, they satisfy the conditions
-            if(Arrays.asList(labels).contains(form.label.trim())){
+            if (Arrays.asList(labels).contains(form.label.trim())) {
                 satStates.add(currentState);
             }
         }
         return satStates;
     }
 
-    private List<State> satAND(And form, List<State> states){
-        List<State> trueLeft = satCheck(states,form.left);
-        List<State> trueRight = satCheck(states,form.right);
+    private List<State> satAND(And form, List<State> states) {
+        List<State> trueLeft = satCheck(states, form.left);
+        List<State> trueRight = satCheck(states, form.right);
         List<State> satStates = new ArrayList<>();
         // get the intersection between right and left
-        for (State aTrueForLeft : trueLeft){
+        for (State aTrueForLeft : trueLeft) {
             if (trueRight.contains(aTrueForLeft)) {
                 satStates.add(aTrueForLeft);
             }
@@ -90,26 +88,26 @@ public class SAT_Solver {
         return satStates;
     }
 
-    private List<State> satThereExists(ThereExists formula,List<State> states){
+    private List<State> satThereExists(ThereExists formula, List<State> states) {
         PathFormula pathFormula = formula.pathFormula;
 
         switch (pathFormula.getFormulaType()) {
             case NEXT:
                 return satNext((Next) formula.pathFormula, states);
             case UNTIL:
-                return until((Until)formula.pathFormula, states);
+                return until((Until) formula.pathFormula, states);
             case ALWAYS:
-                return always((Always) formula.pathFormula,  states);
-            default: return null;
+                return always((Always) formula.pathFormula, states);
+            default:
+                return null;
         }
     }
 
-    private List<State> satNext(Next form, List<State> states ) {
+    private List<State> satNext(Next form, List<State> states) {
         // get temporary sat states for the formula
-        List<State> tempSatStates = satCheck(states,form.stateFormula);
-        //List<State> result = new ArrayList<>();
+        List<State> tempSatStates = satCheck(states, form.stateFormula);
         // if there are action requirements check that the temp sat states fulfil those
-        if(!form.getActions().isEmpty()){
+        if (!form.getActions().isEmpty()) {
             tempSatStates = prevSat(tempSatStates, form.getActions());
         }
 
@@ -125,12 +123,12 @@ public class SAT_Solver {
         return tempSatStates;
     }
 
-    private List<State> always(Always form, List<State> states){
+    private List<State> always(Always form, List<State> states) {
         StateFormula formulaS = form.stateFormula;
-        List<State> satisfactoryStates = satCheck(states,formulaS);
+        List<State> satisfactoryStates = satCheck(states, formulaS);
 
         // enforce condition
-        if(!form.getActions().isEmpty()){
+        if (!form.getActions().isEmpty()) {
             satisfactoryStates = prevSat(satisfactoryStates, form.getActions());
         }
 
@@ -138,7 +136,7 @@ public class SAT_Solver {
 
         // go through the next states and continue to do so. every time one of the states fails, we remove it
         boolean sat = true;
-        while(sat){
+        while (sat) {
 
             List<State> stateList = new ArrayList<>(satList);
             List<State> remove = new ArrayList<>();
@@ -151,7 +149,7 @@ public class SAT_Solver {
 
             }
 
-            if(remove.size()==0) sat = false;
+            if (remove.size() == 0) sat = false;
             satList.removeAll(remove);
 
         }
@@ -159,34 +157,34 @@ public class SAT_Solver {
         return satList;
     }
 
-    private List<State> prevSat(List<State> states, Set<String> actions){
+    private List<State> prevSat(List<State> states, Set<String> actions) {
         // go through all the states and check if they have an incoming action equal to an element in actions,
         // if they do, keep them
         List<State> satStates = new ArrayList<>(states);
-        for (State curr_state : states){
+        for (State curr_state : states) {
             List<Transition> transitions = model.getToStateTrans(curr_state);
-            transitions = extractRelevantTransition(transitions,curr_state);
-            transitions = removeWrongAction(transitions,actions);
+            transitions = extractRelevantTransition(transitions, curr_state);
+            transitions = removeWrongAction(transitions, actions);
             // if there are no possible transitions into curr_state, remove the state from the possible states
-            if(transitions.size()==0 && !curr_state.isInit()){
+            if (transitions.size() == 0 && !curr_state.isInit()) {
                 satStates.remove(curr_state);
             }
         }
         return satStates;
     }
 
-    private List<Transition> removeWrongAction(List<Transition> transitions, Set<String> actions){
-        if(actions.size()==0){
+    private List<Transition> removeWrongAction(List<Transition> transitions, Set<String> actions) {
+        if (actions.size() == 0) {
             return transitions;
         }
-        for (int i = 0; i< transitions.size();i++){
+        for (int i = 0; i < transitions.size(); i++) {
             Transition transition = transitions.get(i);
             // size before and after the actions from this transition were removed
-            // if size didnt shrink, the actions dont overlap and remove the transition
+            // if size didn't shrink, the actions dont overlap and remove the transition
             Set<String> tempActions = new HashSet<>(actions);
             int size_action = tempActions.size();
             tempActions.removeAll(new ArrayList<>(Arrays.asList(transition.getActions())));
-            if(size_action==tempActions.size()){
+            if (size_action == tempActions.size()) {
                 transitions.remove(transition);
                 i--;
             }
@@ -194,16 +192,17 @@ public class SAT_Solver {
         return transitions;
     }
 
-    private List<Transition> extractRelevantTransition(List<Transition> transitions, State target){
+    private List<Transition> extractRelevantTransition(List<Transition> transitions, State target) {
         List<Transition> relevantTransitions = new ArrayList<>();
-        for (Transition transition : transitions){
-            if(transition.getTarget().equals(target.getName())) {
+        for (Transition transition : transitions) {
+            if (transition.getTarget().equals(target.getName())) {
                 relevantTransitions.add(transition);
             }
         }
         return relevantTransitions;
     }
-    private List<State> until(Until formula,  List<State> states){
+
+    private List<State> until(Until formula, List<State> states) {
 
         //Left Branch
         StateFormula left = formula.left;
@@ -218,21 +217,22 @@ public class SAT_Solver {
         Set<String> rightActionsAsSet = formula.getRightActions();
 
 
-        if(!formula.getRightActions().isEmpty()){
+        if (!formula.getRightActions().isEmpty()) {
             rightStates = prevSat(rightStates, rightActionsAsSet);
         }
 
         // all the states can be transitioned into using leftActions
-        if(!formula.getLeftActions().isEmpty()){
-            leftStates = prevSat(leftStates,leftActionsAsSet);
+        if (!formula.getLeftActions().isEmpty()) {
+            leftStates = prevSat(leftStates, leftActionsAsSet);
         }
-        // now, they need be either transition to another state in left states with one of left actions or they need to transition into one of the right states
+        // either transition to another state in left states with one of left actions or
+        // they need to transition into one of the right states
         // for these states we satisfy the formula
         // repeat this until size doesn't change anymore
         boolean change = true;
         List<State> satStates = new ArrayList<>(leftStates);
 
-        while (change){
+        while (change) {
 
             int size = satStates.size();
             // the problem is that at least one of the states needs to connect to a state in the right set. the other need to connect to that state
@@ -246,54 +246,56 @@ public class SAT_Solver {
             // if back at my own left state, there was a loop, try next left state
             // if no connection found - remove the state otherwise leave it in.
             Set<State> nonSatStates = new HashSet<>();
-            for(State leftState : leftStates){
+            for (State leftState : leftStates) {
                 // either connect to another in left states or one to right states with the respective actions, if not, remove
-                if(!(connectToRight(leftState,rightStates,rightActionsAsSet)||connectedToRightViaLeft(new HashSet<State>(),leftState,satStates,rightStates,leftActionsAsSet,rightActionsAsSet))){
+                if (!connectedToRightViaLeft(new HashSet<State>(), leftState, satStates, rightStates, leftActionsAsSet, rightActionsAsSet)) {
                     nonSatStates.add(leftState);
                 }
             }
             satStates.removeAll(nonSatStates);
-            if(size==satStates.size()){
-                change=false;
+            if (size == satStates.size()) {
+                change = false;
             }
         }
         return satStates;
     }
 
-    private boolean connectToRight(State state, List<State> rightStates,Set<String> actions){
+    private boolean connectToRight(State state, List<State> rightStates, Set<String> actions) {
         List<Transition> transitions = model.getFromStateTrans(state);
-        transitions = removeWrongAction(transitions,actions);
+        transitions = removeWrongAction(transitions, actions);
         List<String> targets = getTargetsAsString(transitions);
         for (State desiredConnection : rightStates) {
-            if(targets.contains(desiredConnection.getName())){
+            if (targets.contains(desiredConnection.getName())) {
                 return true;
             }
         }
         return false;
     }
-    private List<String> getTargetsAsString(List<Transition> transitions){
-        List<String> targetsAsString =  new ArrayList<>();
+
+    private List<String> getTargetsAsString(List<Transition> transitions) {
+        List<String> targetsAsString = new ArrayList<>();
         for (int i = 0; i < transitions.size(); i++) {
             targetsAsString.add(transitions.get(i).getTarget());
         }
         return targetsAsString;
     }
+
     private boolean connectedToRightViaLeft(Set<State> visited,
                                             State state,
                                             List<State> desiredConnections,
                                             List<State> rightStates,
                                             Set<String> leftActions,
-                                            Set<String> rightActions){
+                                            Set<String> rightActions) {
         // get transitions from the current State
         List<Transition> transitions = model.getFromStateTrans(state);
         // remove the transitions not complying with actions
-        transitions = removeWrongAction(transitions,leftActions);
+        transitions = removeWrongAction(transitions, leftActions);
         // get all the targets from those transitions (source is always state)
         List<String> targets = getTargetsAsString(transitions);
         // go through the States we want to connect to
-        boolean valid= false;
+        boolean valid = false;
         // if the state is connected to right, we can immediately return true
-        if(connectToRight(state,rightStates,rightActions)){
+        if (connectToRight(state, rightStates, rightActions)) {
             return true;
         }
         visited.add(state);
@@ -304,14 +306,13 @@ public class SAT_Solver {
             // C) it doesn't connect to anything possible or only root state - give up and return false
 
             // we don't want to transition back to a state already visited
-            if(visited.contains(desiredConnection)){
+            if (visited.contains(desiredConnection)) {
                 continue;
             }
 
             // we can transition into another valid state which is is not one we visited before
-            if(targets.contains(desiredConnection.getName())){
-                //System.out.println(desiredConnection.getName());
-                valid = valid || connectedToRightViaLeft(visited,desiredConnection,desiredConnections,rightStates,leftActions,rightActions);
+            if (targets.contains(desiredConnection.getName())) {
+                valid = valid || connectedToRightViaLeft(visited, desiredConnection, desiredConnections, rightStates, leftActions, rightActions);
             }
 
 

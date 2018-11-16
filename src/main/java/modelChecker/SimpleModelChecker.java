@@ -33,7 +33,7 @@ public class SimpleModelChecker implements ModelChecker {
         model.prepare();
         List<State> modelStates = model.getStateArrayList();
         sat_new.setModel(model);
-        // instead of this, remove everything which doesnt oblige to constraint from model
+        // remove everything which doesnt follow constraint
         if(constraint != null) {
             //finalFormula = new And(constraint, finalFormula);
             // use the enf as formula
