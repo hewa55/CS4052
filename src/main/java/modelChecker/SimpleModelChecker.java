@@ -1,5 +1,6 @@
 package modelChecker;
 
+import formula.stateFormula.And;
 import formula.stateFormula.Not;
 import formula.stateFormula.StateFormula;
 import model.Model;

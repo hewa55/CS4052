@@ -20,10 +20,10 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl1() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl1.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl1.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -36,10 +36,10 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl2() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl2.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl2.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -52,9 +52,9 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl3() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl3.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl3.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -70,9 +70,9 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl4() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl4.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl4.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -86,9 +86,9 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl5() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl5.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl5.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -101,9 +101,9 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl6() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl6.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl6.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -119,9 +119,9 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl7() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl7.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl7.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -135,10 +135,10 @@ public class ModelCheckerTest2 {
     @Test
     public void CheckModel2Ctl7Constraint2() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/model2.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/model2.json");
 
-            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/Constraints/constraint2.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/model2ctl/ctl7.json").parse();
+            StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/Constraints/constraint2.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/model2ctl/ctl7.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 

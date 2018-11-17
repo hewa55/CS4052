@@ -3,19 +3,24 @@
 		{
 			"init": true,
 			"name": "s0",
-			"label": ["a"]
+			"label": ["t"]
 		},
 		{
 			"init": false,
 			"name": "s1",
-			"label": ["a"]
+			"label": ["p"]
 		}
 	],
 	"transitions": [
 		{
 			"source": "s0",
-			"target": "s1",
+			"target": "s0",
 			"actions": ["act1"]
+		},
+		{
+			"source": "s0",
+			"target": "s1",
+			"actions": ["act2"]
 		}
 	]
 }

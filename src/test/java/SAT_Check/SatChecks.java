@@ -27,10 +27,10 @@ public class SatChecks {
     @Test
     public void CheckForAllUntil() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/Sat_checks/model3.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/Sat_checks/model3.json");
 
-            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/Sat_checks/ctl1.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/Sat_checks/ctl1.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 
@@ -44,10 +44,10 @@ public class SatChecks {
     @Test
     public void CheckAlways() {
         try {
-            Model model = Model.parseModel("src/test/resources/2018/Sat_checks/model3.json");
+            Model model = Model.parseModel("src/test/resources/test_cases/Sat_checks/model3.json");
 
-            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/2018/constraint1.json").parse();
-            StateFormula query = new FormulaParser("src/test/resources/2018/Sat_checks/ctl2.json").parse();
+            //StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/constraint1.json").parse();
+            StateFormula query = new FormulaParser("src/test/resources/test_cases/Sat_checks/ctl2.json").parse();
 
             SimpleModelChecker mc = new SimpleModelChecker();
 

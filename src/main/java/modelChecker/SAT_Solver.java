@@ -24,7 +24,6 @@ public class SAT_Solver {
     }
 
     public List<State> satCheck(List<State> states, StateFormula formula) {
-
         List<State> satStates = new ArrayList<>();
         switch (formula.getFormulaType()) {
             case THERE_EXISTS:
@@ -111,7 +110,7 @@ public class SAT_Solver {
             tempSatStates = prevSat(tempSatStates, form.getActions());
         }
 
-        // get all successors in a set
+        // get all successors
         List<State> all_successors = new ArrayList<>();
         for (State state : states) {
             List<State> successors = model.nextStates(state);
@@ -163,7 +162,6 @@ public class SAT_Solver {
         List<State> satStates = new ArrayList<>(states);
         for (State curr_state : states) {
             List<Transition> transitions = model.getToStateTrans(curr_state);
-            transitions = extractRelevantTransition(transitions, curr_state);
             transitions = removeWrongAction(transitions, actions);
             // if there are no possible transitions into curr_state, remove the state from the possible states
             if (transitions.size() == 0 && !curr_state.isInit()) {
@@ -192,15 +190,6 @@ public class SAT_Solver {
         return transitions;
     }
 
-    private List<Transition> extractRelevantTransition(List<Transition> transitions, State target) {
-        List<Transition> relevantTransitions = new ArrayList<>();
-        for (Transition transition : transitions) {
-            if (transition.getTarget().equals(target.getName())) {
-                relevantTransitions.add(transition);
-            }
-        }
-        return relevantTransitions;
-    }
 
     private List<State> until(Until formula, List<State> states) {
 
