@@ -18,7 +18,7 @@ public class MutualExclChecker {
 
             StateFormula query = new FormulaParser("src/test/resources/ctl_mc.json").parse();
 
-            ModelChecker mc = new SimpleModelChecker();
+            SimpleModelChecker mc = new SimpleModelChecker();
 
             assertTrue(mc.check(model, null, query));
         } catch (IOException e) {

@@ -113,8 +113,6 @@ public class ModelCheckerTest1 {
             StateFormula fairnessConstraint = new FormulaParser("src/test/resources/test_cases/Constraints/constraint1.json").parse();
             StateFormula query = new FormulaParser("src/test/resources/test_cases/model1ctl/ctl5.json").parse();
             SimpleModelChecker mc = new SimpleModelChecker();
-            System.out.println("Failing test start:");
-
             try {
                 assertTrue(mc.check(model, fairnessConstraint, query));
             } catch (AssertionError e) {
