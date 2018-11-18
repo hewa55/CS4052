@@ -15,6 +15,7 @@ public class SimpleModelChecker implements ModelChecker {
 
     private ENF enfProcessor;
     private String[] trace;
+    private List<State> notSatStates;
 
 
     private SAT_Solver sat_new;
@@ -23,6 +24,11 @@ public class SimpleModelChecker implements ModelChecker {
         this.enfProcessor = new ENF();
         this.sat_new = new SAT_Solver();
 
+    }
+
+
+    public List<State> getNotSatStates() {
+        return notSatStates;
     }
 
     @Override
@@ -92,6 +98,10 @@ public class SimpleModelChecker implements ModelChecker {
         // get the goal states
         modelStates.removeAll(satisfactory_states);
         modelStates.removeAll(initials);
+
+        // save the notSatStates
+        notSatStates = new ArrayList<>(modelStates);
+        notSatStates.addAll(initials);
         // find a connection between the initials and the model states above
         // picking any initial state is enough
         State initial = initials.get(0);
