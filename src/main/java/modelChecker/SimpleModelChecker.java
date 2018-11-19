@@ -44,20 +44,20 @@ public class SimpleModelChecker implements ModelChecker {
         sat_new.setModel(model);
         // remove everything which doesn't follow constraint
         if(constraint != null) {
-            //finalFormula = new And(constraint, finalFormula);
             // use the enf as formula
             StateFormula enfConstraint = enfProcessor.translateENF(constraint);
             sat_new.setModel(model);
             // get all the states satisfying it and update the possible model states
             modelStates = sat_new.satCheck(modelStates, enfConstraint);
         }
+        List<State> initialStates = getInitialStates(modelStates);
 
         StateFormula enfVersion = enfProcessor.translateENF(finalFormula);
 
         List<State> satisfactory_states = sat_new.satCheck(modelStates , enfVersion);
 
 
-        satisfy = satisfactory_states.containsAll(model.initialStates());
+        satisfy = satisfactory_states.containsAll(initialStates);
 
         if (!satisfy){
             getTrace(satisfactory_states,modelStates,model);
@@ -66,6 +66,8 @@ public class SimpleModelChecker implements ModelChecker {
 
         return satisfy;
     }
+
+
 
     @Override
     public String[] getTrace() {
@@ -141,6 +143,16 @@ public class SimpleModelChecker implements ModelChecker {
             targetsAsString.add(transitions.get(i).getTarget());
         }
         return targetsAsString;
+    }
+
+    private List<State> getInitialStates(List<State> modelStates){
+        List<State> initialState= new ArrayList<>();
+        for (State state : modelStates){
+            if(state.isInit()){
+                initialState.add(state);
+            }
+        }
+        return initialState;
     }
 
 
